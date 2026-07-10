@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Complex Comments — Prototype Canvas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--line:#e1e3e5;--ter:#8f959d;--sec:#40444a;--b3:#f0f1f2;--r:4px;}
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{margin:0;font-family:Inter,-apple-system,system-ui,sans-serif;color:#16181c;background:#e9eaec;overflow:hidden;}
+  .wrap{display:flex;height:100vh;}
+
+  /* ---- control rail (outside the previewed UI) ---- */
+  .rail{width:264px;flex:0 0 auto;background:#fff;border-right:1px solid var(--line);height:100vh;overflow-y:auto;padding:16px 16px 28px;}
+  .brand{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:#f03c3c;}
+  .brand b{font:800 13px Inter;letter-spacing:.02em;}
+  .sub{font:400 11px/1.4 Inter;color:var(--ter);margin:0 0 18px;}
+  .grp{margin-bottom:18px;}
+  .grp>.cap{display:block;font:700 9px Inter;letter-spacing:.11em;text-transform:uppercase;color:var(--ter);margin-bottom:7px;}
+  .seg{display:flex;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;}
+  .seg button{flex:1;border:0;background:#fff;color:var(--sec);font:600 11px Inter;padding:9px 4px;cursor:pointer;border-right:1px solid var(--line);}
+  .seg button:last-child{border-right:0;}
+  .seg button.active{background:#000;color:#fff;}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .row .lbl{font:600 12px Inter;color:#000;}
+  .note{font:400 10px/1.45 Inter;color:var(--ter);margin-top:5px;}
+  .btn{width:100%;border:1px solid #000;background:#fff;color:#000;border-radius:var(--r);padding:10px;font:700 11px Inter;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;margin-top:8px;}
+  .btn:hover{background:#000;color:#fff;}
+  .sw{position:relative;width:40px;height:22px;border-radius:99px;border:0;background:#000;cursor:pointer;padding:0;transition:background .18s;flex:0 0 auto;}
+  .sw[aria-checked="false"]{background:#c7ccd1;}
+  .sw .knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .18s;}
+  .sw[aria-checked="true"] .knob{transform:translateX(18px);}
+  .rsel{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:var(--r);background:#fff;padding:9px 10px;font:600 12px Inter;color:#000;cursor:pointer;}
+  hr{border:0;border-top:1px solid var(--line);margin:2px 0 18px;}
+
+  /* ---- stage ---- */
+  .stage{flex:1;min-width:0;display:flex;flex-direction:column;}
+  .stage-top{flex:0 0 auto;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:#fff;border-bottom:1px solid var(--line);}
+  .devseg{display:flex;gap:0;border:1px solid var(--line);border-radius:99px;overflow:hidden;}
+  .devseg button{border:0;background:#fff;color:var(--sec);font:700 12px Inter;padding:9px 20px;cursor:pointer;display:flex;align-items:center;gap:7px;}
+  .devseg button.active{background:#000;color:#fff;}
+  .devseg svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;}
+  .dims{font:600 12px Inter;color:var(--ter);font-variant-numeric:tabular-nums;}
+  .canvas{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;padding:28px;background:
+    radial-gradient(circle at 1px 1px,#d3d5d8 1px,transparent 0) 0 0/22px 22px,#e9eaec;}
+  .holder{position:relative;}
+  .device{position:absolute;top:0;left:0;transform-origin:top left;background:#fff;box-shadow:0 24px 70px rgba(0,0,0,.28);}
+  .device.desktop{border-radius:12px;overflow:hidden;border:1px solid #cfd2d6;}
+  .device.desktop .chrome{display:flex;align-items:center;gap:7px;height:38px;padding:0 14px;background:#f0f1f2;border-bottom:1px solid var(--line);}
+  .device.desktop .chrome .d{width:11px;height:11px;border-radius:50%;background:#cfd2d6;}
+  .device.desktop .chrome .url{margin-left:14px;font:500 12px Inter;color:var(--ter);background:#fff;border:1px solid var(--line);border-radius:99px;padding:6px 14px;flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+  .device.mobile{border-radius:44px;padding:13px;background:#0d0e10;box-shadow:0 24px 70px rgba(0,0,0,.4);}
+  .device.mobile .chrome{display:none;}
+  .device .screen{position:relative;overflow:hidden;background:#fff;width:100%;height:100%;}
+  .device.desktop .screen{height:calc(100% - 38px);}
+  .device.mobile .screen{border-radius:30px;}
+  .device.mobile .screen:before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:110px;height:20px;background:#0d0e10;border-radius:0 0 13px 13px;z-index:2147483999;}
+  iframe{border:0;display:block;width:100%;height:100%;background:#fff;}
+  .hint{position:absolute;left:0;right:0;bottom:10px;text-align:center;font:500 11px Inter;color:var(--ter);pointer-events:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <aside class="rail">
+    <div class="brand"><span class="dot"></span><b>PROTOTYPE CANVAS</b></div>
+    <p class="sub">Complex.com article comments. Controls drive the live prototype in the frame →</p>
+
+    <div class="grp"><span class="cap">Viewer</span>
+      <div class="seg" data-cmd="user">
+        <button data-val="anon">Guest</button><button data-val="user">Signed in</button><button data-val="banned">Banned</button>
+      </div>
+    </div>
+
+    <div class="grp"><div class="row"><span class="lbl">First-time user</span>
+      <button class="sw" id="swGL" role="switch" aria-label="First-time user"><span class="knob"></span></button></div>
+      <div class="note">Shows the community-guidelines prompt before the first post.</div></div>
+
+    <div class="grp"><span class="cap">Comments</span>
+      <div class="seg" data-cmd="cmt">
+        <button data-val="populated">Populated</button><button data-val="empty">Empty</button><button data-val="loading">Loading</button>
+      </div>
+    </div>
+
+    <div class="grp"><span class="cap">Template</span>
+      <div class="seg" data-cmd="page">
+        <button data-val="article">Article</button><button data-val="list">List</button>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="grp"><div class="row"><span class="lbl">Margin timeline</span>
+      <button class="sw" id="swTL" role="switch" aria-label="Margin timeline"><span class="knob"></span></button></div>
+      <div class="note">Desktop only — left-margin reading-progress trail.</div></div>
+
+    <div class="grp"><span class="cap">Timeline bar (mobile)</span>
+      <select class="rsel" id="selMB">
+        <option value="off">Off</option>
+        <option value="top">Top — under the nav</option>
+        <option value="bottom">Bottom — above the action bar</option>
+      </select>
+      <div class="note">Scroll-progress bar with comment DP dots (tap a dot). Bottom = newest iteration:
+        docked above the bottom bar, comment cards open upward.</div></div>
+
+    <div class="grp"><span class="cap">Re-rank ⨯ essentials (mobile)</span>
+      <select class="rsel" id="selRR">
+        <option value="off">Essentials only</option>
+        <option value="stacked">Both, stacked (today)</option>
+        <option value="deck">One card, two rows</option>
+        <option value="unified">One pill, single row</option>
+        <option value="flank">Edge arrows + pill</option>
+        <option value="swap">Auto-swap on scroll</option>
+        <option value="focus">Deck + bubble (tap to swap)</option>
+      </select>
+      <div class="note">How the list nav (‹ › + Re-Rank) merges with like/comment/save. List template only —
+        picking a layout switches Template to List. ‹ › jump between list items; Re-Rank itself is inert here.</div></div>
+
+    <hr>
+
+    <button class="btn" id="btnNs">Notification settings</button>
+    <button class="btn" id="btnReset">Reset demo data</button>
+    <button class="btn" id="btnReload">Reload frame</button>
+  </aside>
+
+  <main class="stage">
+    <div class="stage-top">
+      <div class="devseg" id="devseg">
+        <button data-dev="desktop"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>Desktop</button>
+        <button data-dev="mobile" class="active"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>Mobile</button>
+      </div>
+      <div class="dims" id="dims">1440 × 900 · 100%</div>
+    </div>
+    <div class="canvas" id="canvas">
+      <div class="holder" id="holder">
+        <div class="device desktop" id="device">
+          <div class="chrome"><span class="d"></span><span class="d"></span><span class="d"></span>
+            <span class="url">complex.com/sneakers/a/matt-welty/the-best-sneakers-in-the-nba-finals</span></div>
+          <div class="screen"><iframe id="frame" src="index.html" title="prototype"></iframe></div>
+        </div>
+      </div>
+      <div class="hint" id="hint"></div>
+    </div>
+  </main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var frame=document.getElementById("frame"),
+      canvas=document.getElementById("canvas"),holder=document.getElementById("holder"),
+      device=document.getElementById("device"),dims=document.getElementById("dims"),hint=document.getElementById("hint");
+
+  // harness holds the source of truth; it pushes state into the iframe.
+  var state={device:"mobile",user:"user",cmt:"populated",page:"list",firstTime:true,trail:true,mbar:"bottom",rerank:"focus"};
+  var DIMS={desktop:{w:1440,h:900,chrome:38,bezel:0},mobile:{w:390,h:844,chrome:0,bezel:13}};
+
+  function post(type,value){try{frame.contentWindow.postMessage({__tlc:1,type:type,value:value},"*");}catch(e){}}
+  function sendAll(){
+    post("user",state.user);post("cmt",state.cmt);post("page",state.page);
+    post("gl",!state.firstTime);post("trail",state.trail);post("mbar",state.mbar);post("rerank",state.rerank);
+  }
+  // when the prototype boots inside the frame it says "ready" → push current state
+  window.addEventListener("message",function(e){var d=e.data;if(d&&d.__tlc===1&&d.type==="ready")sendAll();});
+  frame.addEventListener("load",function(){setTimeout(sendAll,180);});
+
+  /* ---- layout / scale-to-fit ---- */
+  function layout(){
+    var d=DIMS[state.device];
+    var devW=d.w+d.bezel*2, devH=d.h+d.chrome+d.bezel*2;
+    frame.style.width=d.w+"px";frame.style.height=d.h+"px";
+    device.className="device "+state.device;
+    device.style.width=devW+"px";device.style.height=devH+"px";
+    var availW=canvas.clientWidth-56, availH=canvas.clientHeight-56;
+    var s=Math.min(1, availW/devW, availH/devH);
+    holder.style.width=(devW*s)+"px";holder.style.height=(devH*s)+"px";
+    device.style.transform="scale("+s+")";
+    dims.textContent=d.w+" × "+d.h+" · "+Math.round(s*100)+"%";
+    hint.textContent=state.device==="mobile"?"Mobile view (390px) — timeline bar shows here; margin trail is hidden."
+                                            :"Desktop view (1440px) — margin trail shows here; timeline bar is hidden.";
+  }
+  window.addEventListener("resize",layout);
+
+  /* ---- device switch ---- */
+  document.getElementById("devseg").addEventListener("click",function(e){
+    var b=e.target.closest("button");if(!b)return;
+    state.device=b.dataset.dev;
+    [].forEach.call(this.querySelectorAll("button"),function(x){x.classList.toggle("active",x===b);});
+    layout();
+  });
+
+  /* ---- condition segments ---- */
+  [].forEach.call(document.querySelectorAll(".seg"),function(seg){
+    var cmd=seg.dataset.cmd;
+    seg.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;
+      state[cmd]=b.dataset.val;setSeg();post(cmd,b.dataset.val);});
+  });
+  function setSeg(){
+    [].forEach.call(document.querySelectorAll(".seg"),function(seg){var cmd=seg.dataset.cmd;
+      [].forEach.call(seg.querySelectorAll("button"),function(b){b.classList.toggle("active",b.dataset.val===state[cmd]);});});
+  }
+
+  /* ---- switches ---- */
+  function wireSwitch(id,get,set){
+    var el=document.getElementById(id);
+    function sync(){el.setAttribute("aria-checked",get()?"true":"false");}
+    el.addEventListener("click",function(){set(!get());sync();});
+    sync();return sync;
+  }
+  var syncGL=wireSwitch("swGL",function(){return state.firstTime;},function(v){state.firstTime=v;post("gl",!v);});
+  var syncTL=wireSwitch("swTL",function(){return state.trail;},function(v){state.trail=v;post("trail",v);});
+  var selMB=document.getElementById("selMB");selMB.value=state.mbar;
+  selMB.addEventListener("change",function(){state.mbar=selMB.value;post("mbar",state.mbar);});
+  var selRR=document.getElementById("selRR");selRR.value=state.rerank;
+  selRR.addEventListener("change",function(){state.rerank=selRR.value;
+    if(state.rerank!=="off"&&state.page!=="list"){state.page="list";setSeg();post("page","list");}   // variants only exist on lists
+    post("rerank",state.rerank);});
+
+  /* ---- buttons ---- */
+  document.getElementById("btnNs").addEventListener("click",function(){post("ns");});
+  document.getElementById("btnReset").addEventListener("click",function(){
+    state.firstTime=true;state.cmt="populated";syncGL();setSeg();post("reset");});
+  document.getElementById("btnReload").addEventListener("click",function(){frame.src=frame.src;});
+
+  setSeg();layout();
+})();
+</script>
+</body>
+</html>

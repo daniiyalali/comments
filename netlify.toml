@@ -1,0 +1,5 @@
+# Netlify config — serves the single self-contained prototype.
+[build]
+  publish = "dist"
+  # No build step: index.html is pre-built by build_live.py and copied into dist/.
+  command = "echo 'static site — nothing to build'"
