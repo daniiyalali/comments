@@ -2,7 +2,10 @@
 
 Running log of decisions, rationale, and state. Newest first. Update every build.
 
-> **Current state = Build 45 (2026-07-10), PUSHED — commit a97bc9c on main, auto-deployed via Vercel.** Build 45 = **comments are OFF the page** — no scrollable
+> **Current state = Build 46 (2026-07-11), PUSHED, auto-deployed via Vercel.** Build 46 = **MVP mode
+> and the bottom anchor ad are ON by default** (per the user; stored "0" turns either off; canvas
+> harness defaults `mvp:true, ad:true`) — fresh loads open in the v1 spec scope with the ad showing.
+> Build 45 = **comments are OFF the page** — no scrollable
 > end-of-page section; the thread lives ONLY in the drawer (desktop side sheet / mobile bottom
 > sheet). Build 44 = **bottom anchor-ad simulation** ("Bottom
 > anchor ad" switch, `complex-tlc-ad`, bridge `ad` — sticky 50px ad bar at the viewport bottom;
@@ -33,6 +36,12 @@ Running log of decisions, rationale, and state. Newest first. Update every build
 > https://www.figma.com/design/Ils4e9Naytz66xI6UJ1G49/Comments-Exp (see the entry below).
 
 ---
+
+## 2026-07-11 — Build 46: MVP + anchor ad ON by default
+- **User:** "lets keep ad and mvp on by default please." Both toggles now default ON: the localStorage
+  reads flipped polarity (`==="0"` → off, anything else/unset → on) so existing explicit choices are
+  kept; `canvas.html` harness state starts `mvp:true, ad:true` (rail switches + grayed exp controls
+  reflect it). Fresh loads = v1 MVP scope + sticky anchor ad. Pushed same day.
 
 ## 2026-07-10 — Build 45: comments removed from the page (drawer-only)
 - **User:** "remove the comments from the page. So you can't just scroll to them. It's only side

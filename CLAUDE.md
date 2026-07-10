@@ -152,7 +152,7 @@ injected on top. It's self-contained (images/fonts load from CDN).
   Viewer (Guest/Signed-in/Banned), First-time user (community-guidelines prompt), Comments
   (Populated/Empty/Loading skeleton), Template (Article/List), **Margin timeline** (desktop trail) +
   **Timeline bar** (mobile bar), plus **Notification settings** + **Reset demo data** buttons.
-- **Bottom anchor ad toggle (Build 44):** the live site sometimes pins a **sticky anchor ad** to the
+- **Bottom anchor ad toggle (Build 44; DEFAULT ON since Build 46):** the live site sometimes pins a **sticky anchor ad** to the
   viewport bottom (user screenshot: COMPLEX mark · green LTL creative · ✕). Simulated as `.tlc-ad`
   (fixed, z 2147483065, 50px + safe-area, dismissible ✕ = toggle off, CTA/✕ toast). `adOn` persisted
   `complex-tlc-ad`, switch `#tlcSwAD` (panel, after Template — NOT in the MVP-grayed group: it's a
@@ -160,7 +160,8 @@ injected on top. It's self-contained (images/fonts load from CDN).
   `tlc-adon` body class lifts every floating bottom element: FAB → 70px, abar → 66px, bottom timeline
   panel → 50px (its height calc in `placeMbar()` stops at the ad's top edge), proto panel → 70px.
   Drawer/sheets still slide over the ad (they're modal surfaces).
-- **MVP toggle (Build 42):** `mvpOn` (persisted `complex-tlc-mvp`; switch `#tlcSwMVP` in the panel,
+- **MVP toggle (Build 42; DEFAULT ON since Build 46 — both toggles read "0" as off, anything else =
+  on; canvas harness state also defaults `mvp:true, ad:true`):** `mvpOn` (persisted `complex-tlc-mvp`; switch `#tlcSwMVP` in the panel,
   `#swMVP` in the canvas rail, bridge type `mvp`). **ON = only the spec'd v1 requirements**: the
   comments drawer (since Build 45 the ONLY thread surface — empty, loading skeleton, sort flip), composer (2,000-char
   counter, guidelines first-time, auth gate, banned notice), card states (reply tier, edit <5 min,

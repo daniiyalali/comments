@@ -169,7 +169,7 @@
       device=document.getElementById("device"),dims=document.getElementById("dims"),hint=document.getElementById("hint");
 
   // harness holds the source of truth; it pushes state into the iframe.
-  var state={device:"mobile",user:"user",cmt:"populated",page:"list",firstTime:true,trail:true,mbar:"bottom",rerank:"focus",mvp:false,ad:false};
+  var state={device:"mobile",user:"user",cmt:"populated",page:"list",firstTime:true,trail:true,mbar:"bottom",rerank:"focus",mvp:true,ad:true};
   var DIMS={desktop:{w:1440,h:900,chrome:38,bezel:0},mobile:{w:390,h:844,chrome:0,bezel:13}};
 
   function post(type,value){try{frame.contentWindow.postMessage({__tlc:1,type:type,value:value},"*");}catch(e){}}

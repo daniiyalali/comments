@@ -1,6 +1,9 @@
 # HANDOFF.md
 
-**Last updated:** 2026-07-10 — Latest code build = **Build 45: comments are OFF the page** — you can
+**Last updated:** 2026-07-11 — Latest code build = **Build 46: MVP + anchor ad ON by default** (per
+the user): fresh loads open in MVP scope with the bottom anchor ad showing (`complex-tlc-mvp` /
+`complex-tlc-ad` now default ON, "0" = off; canvas harness `state.mvp/ad = true`). Prior =
+**Build 45: comments are OFF the page** — you can
 no longer scroll to a comment section; the thread lives **only in the drawer** (desktop side sheet /
 mobile bottom sheet), opened via FAB / action-bar comment / markers / dots / select-to-comment. The
 `.tlc-cend` section element + its code remain in `live-inject.js` but are never inserted (detached;

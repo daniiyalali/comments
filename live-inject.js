@@ -499,10 +499,10 @@
   let trailOn=true;               try{if(localStorage.getItem(TKEY)==="0")trailOn=false;}catch(e){}
   // MVP scope: ON = only the spec'd v1 requirements (thread + composer + card states, reactions,
   // flagging, notification settings); the experimental timeline/action-bar layers are hidden.
-  let mvpOn=false;                try{if(localStorage.getItem(MVP_KEY)==="1")mvpOn=true;}catch(e){}
+  let mvpOn=true;                 try{if(localStorage.getItem(MVP_KEY)==="0")mvpOn=false;}catch(e){}   // default ON (Build 46)
   if(mvpOn)document.body.classList.add("tlc-mvp");
   // simulated sticky bottom anchor ad — page condition, applies in MVP and full mode alike
-  let adOn=false;                 try{if(localStorage.getItem(AD_KEY)==="1")adOn=true;}catch(e){}
+  let adOn=true;                  try{if(localStorage.getItem(AD_KEY)==="0")adOn=false;}catch(e){}     // default ON (Build 46)
   if(adOn)document.body.classList.add("tlc-adon");
   // mobile timeline bar position: off | top (under the nav) | bottom (docked above the bottom bar —
   // the Page 3 iteration, default). Legacy stored values: "1"→bottom, "0"→off.
