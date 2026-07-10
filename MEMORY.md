@@ -2,7 +2,9 @@
 
 Running log of decisions, rationale, and state. Newest first. Update every build.
 
-> **Current state = Build 46 (2026-07-11), PUSHED, auto-deployed via Vercel.** Build 46 = **MVP mode
+> **Current state = Build 47 (2026-07-11), PUSHED, auto-deployed via Vercel.** Build 47 = **"Who
+> reacted" is hidden in MVP** (heart + count stay; the trigger + expandable list are full-mode only).
+> Build 46 = **MVP mode
 > and the bottom anchor ad are ON by default** (per the user; stored "0" turns either off; canvas
 > harness defaults `mvp:true, ad:true`) — fresh loads open in the v1 spec scope with the ad showing.
 > Build 45 = **comments are OFF the page** — no scrollable
@@ -36,6 +38,13 @@ Running log of decisions, rationale, and state. Newest first. Update every build
 > https://www.figma.com/design/Ils4e9Naytz66xI6UJ1G49/Comments-Exp (see the entry below).
 
 ---
+
+## 2026-07-11 — Build 47: "Who reacted" removed from MVP
+- **User:** "lets remove 'who reacted' from mvp please." MVP cards keep the heart + like count, but
+  the "Who reacted" trigger and the expandable reactor list no longer render while MVP is ON
+  (`!mvpOn` gates on `.tlc-reactors-t` and `reactorsHtml(c)` in `cmtHtml`). Full mode unchanged.
+  Note the original MVP requirements listed "List of users who reacted" — the user has since cut it
+  from v1 scope. Pushed same day.
 
 ## 2026-07-11 — Build 46: MVP + anchor ad ON by default
 - **User:** "lets keep ad and mvp on by default please." Both toggles now default ON: the localStorage

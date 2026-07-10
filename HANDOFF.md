@@ -1,6 +1,8 @@
 # HANDOFF.md
 
-**Last updated:** 2026-07-11 — Latest code build = **Build 46: MVP + anchor ad ON by default** (per
+**Last updated:** 2026-07-11 — Latest code build = **Build 47: "Who reacted" removed from MVP** (the
+expandable reactor list + its trigger only render in full mode now; MVP keeps heart + count). Prior =
+**Build 46: MVP + anchor ad ON by default** (per
 the user): fresh loads open in MVP scope with the bottom anchor ad showing (`complex-tlc-mvp` /
 `complex-tlc-ad` now default ON, "0" = off; canvas harness `state.mvp/ad = true`). Prior =
 **Build 45: comments are OFF the page** — you can

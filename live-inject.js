@@ -857,11 +857,11 @@
       '<div class="tlc-main"><div class="tlc-top"><span class="tlc-nm">@'+esc(c.author)+'</span><span class="tlc-tm">'+c.time+' ago</span>'+(c.edited?'<span class="tlc-tm">· edited</span>':'')+'</div>'+
       tag+'<div class="tlc-tx">'+esc(c.text)+'</div>'+
       '<div class="tlc-acts"><button class="tlc-like" data-id="'+c.id+'">'+HEART+'<span>'+c.likes+'</span></button>'+
-      (c.likes>0?'<button class="tlc-reactors-t" data-id="'+c.id+'">Who reacted</button>':'')+
+      ((c.likes>0&&!mvpOn)?'<button class="tlc-reactors-t" data-id="'+c.id+'">Who reacted</button>':'')+   // who-reacted is beyond MVP (Build 47)
       '<button class="tlc-replyb" data-id="'+c.id+'">'+RIC+'Reply'+(replies.length?' · '+replies.length:'')+'</button>'+
       ((opts.tag||mvpOn)?'':'<button class="tlc-jump" data-p="'+c.progress+'">Jump to spot</button>')+
       menuHtml(c,false)+'</div>'+
-      reactorsHtml(c)+
+      (mvpOn?'':reactorsHtml(c))+
       (c.reported?'<div class="tlc-reported-note">You reported this comment — our team will review it.</div>':'')+
       (replies.length?'<div class="tlc-replies">'+replies.map(r=>replyHtml(r,c.id)).join("")+'</div>':'')+
       (opts.tag?'':'<div class="tlc-rbox" data-for="'+c.id+'" style="display:none"><input class="tlc-rinput" placeholder="Reply to @'+esc(c.author)+'…"/><button class="tlc-rsend" data-id="'+c.id+'">Reply</button></div>')+

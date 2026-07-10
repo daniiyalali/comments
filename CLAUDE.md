@@ -165,10 +165,11 @@ injected on top. It's self-contained (images/fonts load from CDN).
   `#swMVP` in the canvas rail, bridge type `mvp`). **ON = only the spec'd v1 requirements**: the
   comments drawer (since Build 45 the ONLY thread surface — empty, loading skeleton, sort flip), composer (2,000-char
   counter, guidelines first-time, auth gate, banned notice), card states (reply tier, edit <5 min,
-  [deleted by author], [removed by moderator]), reactions (heart + count + who-reacted), report/flag +
+  [deleted by author], [removed by moderator]), reactions (heart + count — **the "Who reacted" list is
+  hidden in MVP since Build 47**, full mode keeps it), report/flag +
   confirmation, notification-settings modal. **Hidden in MVP:** margin trail, mobile timeline bar,
-  action bar / re-rank variants, select-to-comment, and the cards' progress snippets / "% badge" /
-  "Jump to spot" (timeline anchors are beyond v1). On mobile the plain **Comment FAB** returns as the
+  action bar / re-rank variants, select-to-comment, who-reacted, and the cards' progress snippets /
+  "% badge" / "Jump to spot" (timeline anchors are beyond v1). On mobile the plain **Comment FAB** returns as the
   entry point (`.tlc-mvp .tlc-fab{display:flex}` overrides the mobile hide). Implementation = a
   `tlc-mvp` body class + `mvpOn` guards in `renderTrail`/`updateFill`/`renderMbar`/`updateMbar`/
   `renderAbar`/`showSel`/`cmtHtml`; the experiment controls gray out (`.tlc-pg-exp.mvpdim` /
