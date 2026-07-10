@@ -26,3 +26,14 @@ live = live.replace('</body>', blob + '</body>', 1)
 
 open('index.html', 'w', encoding='utf-8').write(live)
 print('built index.html', len(live), 'bytes |', len(entries), 'entry images available')
+
+# 4) package dist/ for deploy: the canvas harness is the site root (index.html) with the
+#    prototype alongside as prototype.html (the canvas iframe is retargeted to it).
+#    Locally nothing changes: root canvas.html still embeds root index.html.
+import os
+os.makedirs('dist', exist_ok=True)
+open('dist/prototype.html', 'w', encoding='utf-8').write(live)
+canvas = open('canvas.html', encoding='utf-8').read()
+canvas = canvas.replace('src="index.html"', 'src="prototype.html"', 1)
+open('dist/index.html', 'w', encoding='utf-8').write(canvas)
+print('packaged dist/: index.html (canvas) + prototype.html')

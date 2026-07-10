@@ -177,11 +177,15 @@ prototype control panel + canvas harness are excluded (internal tooling). **If a
 mirror the change in the Figma file** (edit via Figma MCP `use_figma`; load the `figma-use` skill
 resource first).
 
-## Deploy (Netlify, free static hosting)
-- `dist/index.html` is the publish folder (just the self-contained prototype); `netlify.toml` sets
-  `publish = "dist"` with a no-op build. `complex-comments-netlify.zip` is the zipped publish file.
-- Easiest: drag `dist/` to https://app.netlify.com/drop. **After every rebuild, re-copy:**
-  `cp index.html dist/index.html` (the builder writes `index.html`, not `dist/`).
+## Deploy (GitHub → Vercel; Netlify drop as fallback)
+- **Repo: https://github.com/daniiyalali/comments** — push to `main` auto-deploys on Vercel (once the
+  repo is imported at vercel.com/new). `vercel.json` serves `dist/` statically, no build.
+- **`dist/` is packaged BY `build_live.py`** (no manual copy step): `dist/index.html` = the **canvas
+  harness** (the deployed site opens on the device-preview canvas, iframe retargeted to
+  `prototype.html`) and `dist/prototype.html` = the self-contained prototype (direct link).
+  Locally unchanged: root `canvas.html` still embeds root `index.html`.
+- Fallback: drag `dist/` to https://app.netlify.com/drop (`netlify.toml` sets `publish = "dist"`);
+  `complex-comments-netlify.zip` = zipped dist.
 
 ## Project rule
 After **every build**, update `CLAUDE.md`, `MEMORY.md`, and `HANDOFF.md`.

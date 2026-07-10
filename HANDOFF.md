@@ -74,13 +74,14 @@ only exists on list articles).
   which side is expanded, the other collapses to a bubble). Arrows
   really jump between the 36 entries; ends disable; prev is track-style.
 
-## Deploy (Netlify, free)
-- `dist/index.html` — clean publish folder (only the self-contained prototype).
-- `netlify.toml` — `publish = "dist"`, no-op build (so Git-connected / CLI deploys also work).
-- `complex-comments-netlify.zip` — zipped `dist/index.html` for drag-drop upload.
-- Fastest: **Netlify Drop** (https://app.netlify.com/drop) → drag `dist/` → instant URL. No CLI here
-  (no `netlify`/`npx` in sandbox). For repeatable deploys: `npm i -g netlify-cli && netlify deploy --prod`.
-- **After any rebuild, re-copy:** `cp index.html dist/index.html` (the builder writes `index.html`, not `dist/`).
+## Deploy (GitHub → Vercel; Netlify drop as fallback)
+- **Repo: https://github.com/daniiyalali/comments** (pushed via the user's keychain git credentials).
+  Import it once at vercel.com/new → every push to `main` auto-deploys. `vercel.json` = static serve
+  of `dist/`, no build step.
+- **The deployed site opens on the CANVAS harness** (device switch + control rail): `build_live.py`
+  now packages `dist/` itself — `dist/index.html` = canvas (iframe → `prototype.html`),
+  `dist/prototype.html` = the self-contained prototype. **No manual `cp` step anymore.**
+- Fallback: drag `dist/` to https://app.netlify.com/drop; `complex-comments-netlify.zip` = zipped dist.
 
 ## TL;DR
 SoundCloud/Loom-style timeline comments for a Complex.com article — the "timeline" is reading
