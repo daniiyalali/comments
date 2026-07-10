@@ -2,8 +2,7 @@
 
 Running log of decisions, rationale, and state. Newest first. Update every build.
 
-> **Current state = Build 45 (2026-07-10), LOCAL-ONLY — not committed/pushed yet per the user**
-> (the deployed site still shows Build 41). Build 45 = **comments are OFF the page** — no scrollable
+> **Current state = Build 45 (2026-07-10), PUSHED — commit a97bc9c on main, auto-deployed via Vercel.** Build 45 = **comments are OFF the page** — no scrollable
 > end-of-page section; the thread lives ONLY in the drawer (desktop side sheet / mobile bottom
 > sheet). Build 44 = **bottom anchor-ad simulation** ("Bottom
 > anchor ad" switch, `complex-tlc-ad`, bridge `ad` — sticky 50px ad bar at the viewport bottom;
@@ -35,7 +34,7 @@ Running log of decisions, rationale, and state. Newest first. Update every build
 
 ---
 
-## 2026-07-10 — Build 45: comments removed from the page (drawer-only) — LOCAL-ONLY, not pushed
+## 2026-07-10 — Build 45: comments removed from the page (drawer-only)
 - **User:** "remove the comments from the page. So you can't just scroll to them. It's only side
   sheet on desktop and bottom sheet on mobile." Applies in MVP and full mode.
 - **Implementation:** the `.tlc-cend` end-of-page section is **never inserted into the DOM** — the
@@ -46,9 +45,9 @@ Running log of decisions, rationale, and state. Newest first. Update every build
   The drawer already carried empty/loading/sort states and the full list, so nothing was lost.
   MVP note copy updated in both panel + canvas rail ("comments drawer … " instead of "end-of-page
   thread + drawer"). The feed-reply path (`startReply(kind="end")`) is now unreachable but kept.
-- **Verified:** JavaScriptCore syntax OK; rebuild OK (749,451 bytes). Still LOCAL-ONLY (42–45).
+- **Verified:** JavaScriptCore syntax OK; rebuild OK (749,451 bytes). Pushed with 42–44 in commit a97bc9c.
 
-## 2026-07-10 — Build 44: sticky bottom anchor-ad simulation — LOCAL-ONLY, not pushed
+## 2026-07-10 — Build 44: sticky bottom anchor-ad simulation
 - **User (with a live screenshot):** "sometimes we have this ad at the bottom, please add a toggle to
   simulate the ad." The live page pins a full-width **anchor ad** to the viewport bottom: small
   stacked COMPLEX mark on the left, a green 320×50-style creative (LTL carrier: "THE #1 NATIONAL LTL
@@ -65,9 +64,9 @@ Running log of decisions, rationale, and state. Newest first. Update every build
   in MVP; it's a page condition, valid in both modes), `#swAD` in the canvas rail, bridge
   `{type:"ad"}` in `sendAll`. Default OFF.
 - **Verified:** JavaScriptCore syntax OK; rebuild OK (749,106 bytes); ad markup + switches confirmed
-  in `index.html` and `dist/`. Still LOCAL-ONLY (Builds 42–44 uncommitted).
+  in `index.html` and `dist/`. Pushed in commit a97bc9c.
 
-## 2026-07-10 — Build 43: flat reply-to-reply + one composer per surface — LOCAL-ONLY, not pushed
+## 2026-07-10 — Build 43: flat reply-to-reply + one composer per surface
 - **User spec:** replies to replies are allowed, but the hierarchy stays **max one level deep** —
   replying to a reply lands in the same indented tier and just carries an "@name" of who's being
   answered (YouTube/Instagram-style flattening). Applies in MVP **and** full mode (same component).
@@ -93,11 +92,11 @@ Running log of decisions, rationale, and state. Newest first. Update every build
     desktop marker **sheet keeps it** — that surface has no persistent composer, so no duplication.
   - Feed reply scrolls the composer into view (it sits above the list) before focusing.
 - **Verified:** JavaScriptCore syntax OK; rebuild OK (744,772 bytes); `tlc-rc-x`/`startReply`/
-  `tlc-mention` confirmed in `index.html` + `dist/`. Still LOCAL-ONLY per the user.
+  `tlc-mention` confirmed in `index.html` + `dist/`. Pushed in commit a97bc9c.
 - **Figma mirror pending:** card sheet (Reply on replies + @mention) and composer sheet (reply-mode
   banner state) — add when the Figma catch-up pass happens (sort flip-toggle is also still pending).
 
-## 2026-07-10 — Build 42: MVP toggle (v1 spec scope) — LOCAL-ONLY, not pushed
+## 2026-07-10 — Build 42: MVP toggle (v1 spec scope)
 - **User asked for an "MVP" toggle in the prototype control**: ON = exactly the v1 requirements list —
   comment thread on article & list templates (placement/entry point, empty state, loading skeleton,
   sort toggle, Load more → drawer as the pagination pattern), composer (2,000-char counter, first-time

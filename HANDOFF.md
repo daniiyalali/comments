@@ -31,8 +31,7 @@ composer (2,000-char counter, first-time community-guidelines, auth gate, banned
 settings modal (email-on-reply + weekly digest). Everything experimental hides: margin trail, mobile
 timeline bar, action bar / re-rank variants, select-to-comment, and the cards' progress snippets /
 "% badge" / "Jump to spot". On mobile the plain **Comment FAB** returns as the entry point. The
-experiment controls gray out while MVP is ON (values kept). **⚠️ Builds 42–45 are LOCAL-ONLY — per
-the user, NOT committed or pushed yet** (deploy still shows Build 41). Prior build = **Build 41**: the mobile **timeline bar docks at
+experiment controls gray out while MVP is ON (values kept). Builds 42–45 were **committed & pushed 2026-07-10** (commit a97bc9c) — the Vercel deploy now carries them. Prior build = **Build 41**: the mobile **timeline bar docks at
 the BOTTOM** (user's Figma "Page 3" mock, node 98-100) — top edge of a white panel above the bottom
 action bar (track flush at the panel edge, dots bleed over the article, 20px gap to the action bar,
 bloomed DP 20px); position switchable **Off / Top / Bottom** (default Bottom) in the panel + canvas
@@ -73,8 +72,7 @@ designs & states”, 5 sections, prototype flows wired; only the prototype contr
 - Keep the Figma file and `live-inject.js` in sync going forward — if a build changes UI, mirror it.
 
 **Pick up here next session:** Builds 42–45 (MVP toggle; flat replies + single composer; anchor-ad
-simulation; drawer-only comments) are **uncommitted local work** — commit + push when
-the user gives the word (push auto-deploys). Then: open **`canvas.html`** (defaults to Mobile + List +
+simulation; drawer-only comments) are **pushed & deployed** (commit a97bc9c). Open **`canvas.html`** (defaults to Mobile + List +
 focus layout + bottom timeline; flip the new **MVP** switch to see the bare v1 scope) — evaluate
 (a) the **bottom timeline + comment-browser card** (tap dot → centered
 card, ‹ › steps comments, article scrolls behind, light-gray paragraph highlight) vs the Top
