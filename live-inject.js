@@ -68,6 +68,8 @@
   .tlc-acts svg{width:14px;height:14px;}
   .tlc-replies{margin-top:10px;padding-left:14px;border-left:2px solid var(--tlc-line);}
   .tlc-cmt.tlc-reply{padding:10px 0;border-bottom:none;}
+  /* flattened reply-to-reply: the target is an @mention inside the same (single) reply tier */
+  .tlc-mention{font-weight:600;color:#000;}
   .tlc-rbox{display:flex;gap:8px;margin-top:10px;}
   .tlc-rinput{flex:1;min-width:0;border:1px solid var(--tlc-line);border-radius:var(--tlc-r);padding:9px 11px;font:400 13px Inter;color:#16181c;}
   .tlc-rinput:focus{outline:none;border-color:#000;}
@@ -416,13 +418,39 @@
   .tlc-fsoc.exp .fmini{opacity:0;pointer-events:none;}
   .tlc-fsoc.exp .fx{opacity:1;transition-delay:.14s;}
   .tlc-sel{width:100%;box-sizing:border-box;border:1px solid var(--tlc-line);border-radius:var(--tlc-r);background:#fff;padding:9px 10px;font:600 12px Inter;color:#000;cursor:pointer;}
+  /* simulated sticky bottom anchor ad (Build 44) — the live site pins one to the viewport bottom
+     (COMPLEX mark · ad creative · dismiss ✕). Toggleable page condition; when ON the body class
+     tlc-adon lifts every floating bottom element above it (offsets = 50px bar + safe area). */
+  .tlc-ad{position:fixed;left:0;right:0;bottom:0;z-index:2147483065;display:none;align-items:center;gap:8px;
+    padding:4px 8px calc(4px + env(safe-area-inset-bottom));background:#fff;box-shadow:0 -2px 10px rgba(0,0,0,.14);font-family:Inter,sans-serif;}
+  .tlc-ad.on{display:flex;}
+  .tlc-ad .ad-mark{flex:0 0 auto;font:900 11px/0.95 Inter;color:#4a4f55;text-transform:uppercase;}
+  .tlc-ad .ad-cr{flex:1;min-width:0;max-width:360px;margin:0 auto;height:42px;background:#0b7a33;border-radius:2px;
+    display:flex;align-items:center;gap:10px;padding:0 10px;color:#fff;overflow:hidden;}
+  .tlc-ad .ad-tx{flex:1;min-width:0;}
+  .tlc-ad .ad-tx .l1{font:900 10.5px/1.2 Inter;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .tlc-ad .ad-tx .l2{font:900 10.5px/1.2 Inter;text-transform:uppercase;}
+  .tlc-ad .ad-tx .l3{font:400 6.5px/1.3 Inter;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .tlc-ad .ad-cta{flex:0 0 auto;background:#fff;color:#16181c;font:700 9px Inter;letter-spacing:.03em;text-transform:uppercase;border:0;border-radius:2px;padding:8px 10px;cursor:pointer;}
+  .tlc-ad .ad-x{flex:0 0 auto;border:0;background:none;color:#8f959d;width:30px;height:30px;display:grid;place-items:center;cursor:pointer;padding:0;}
+  .tlc-ad .ad-x svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;}
+  .tlc-adon .tlc-fab{bottom:calc(70px + env(safe-area-inset-bottom));}
+  .tlc-adon .tlc-abar{bottom:calc(66px + env(safe-area-inset-bottom));}
+  .tlc-adon .tlc-mbar.tlc-mbar-bot{bottom:calc(50px + env(safe-area-inset-bottom));}
+  .tlc-adon .tlc-proto{bottom:calc(70px + env(safe-area-inset-bottom));}
+  /* MVP scope (Build 42) — only the spec'd v1 comment-thread requirements. The body class hides the
+     experimental layers (margin trail, mobile timeline bar, action bar / re-rank, select-to-comment)
+     and brings the Comment FAB back on mobile as the plain entry point. */
+  .tlc-mvp .tlc-trail,.tlc-mvp .tlc-mbar,.tlc-mvp .tlc-mcard,.tlc-mvp .tlc-abar,.tlc-mvp .tlc-seltip{display:none!important;}
+  @media(max-width:1023px){.tlc-mvp .tlc-fab{display:flex!important;}}
+  .tlc-proto .tlc-pg-exp.mvpdim{opacity:.4;pointer-events:none;}
   `;
   const st=document.createElement("style"); st.textContent=CSS; document.head.appendChild(st);
 
   /* ---------------- data ---------------- */
   const ENTRIES=window.__TLC_ENTRIES__||[];
   const COLORS=["#f03c3c","#0f65ef","#0a7d57","#b8590a","#5a2fb0","#16181c","#40444a","#8f959d"];
-  const KEY="complex-tlc-live-v3";   // bumped for the new seed flags (edited/deleted/removed/reactors)
+  const KEY="complex-tlc-live-v4";   // bumped for the flattened reply-to-reply @mention seed (Build 43)
   const CURRENT_USER="you";
   const SEED=[
     {id:"s1",author:"sneakerhead_92",progress:4,text:"the way they open with 'no basketball, no sneaker culture' — facts.",time:"2h",likes:14},
@@ -436,7 +464,8 @@
       {id:"del1r1",author:"calm_take",text:"nah I actually agreed with the point they made here.",time:"20h",likes:4}]},
     {id:"s6",author:"flugame97",progress:24,text:"the flu game 12s give me chills every time. iconic.",time:"1d",likes:88,reactors:["jumpman_23","chicago_312","mjisgoat","retroqueen","bullsfan4life"],replies:[
       {id:"s6r1",author:"jumpman_23",text:"and he gave them to a ballboy after. wild.",time:"22h",likes:9},
-      {id:"s6r2",author:"chicago_312",text:"still the most emotional sneaker moment in finals history",time:"19h",likes:15}]},
+      {id:"s6r2",author:"chicago_312",text:"still the most emotional sneaker moment in finals history",time:"19h",likes:15},
+      {id:"s6r3",author:"flugame97",text:"@chicago_312 facts — nothing else in finals history comes close.",time:"18h",likes:3}]},
     {id:"s7",author:"retroqueen",progress:27,text:"the playoff 12s are on my grail list forever",time:"2d",likes:17},
     {id:"rem1",author:"banned_troll",progress:29,removed:true,time:"1d",likes:0},
     {id:"s8",author:"pippenAintEasy",progress:31,text:"can we talk about how clean these looked on the hardwood floor",time:"1d",likes:11},
@@ -466,8 +495,15 @@
   /* ---------------- prototype / condition state ---------------- */
   const TKEY="complex-tlc-trail", USER_KEY="complex-tlc-user", GL_KEY="complex-tlc-guidelines",
         PT_KEY="complex-tlc-pagetype", NR_KEY="complex-tlc-ntf-reply", ND_KEY="complex-tlc-ntf-digest",
-        MBAR_KEY="complex-tlc-mbar";
+        MBAR_KEY="complex-tlc-mbar", MVP_KEY="complex-tlc-mvp", AD_KEY="complex-tlc-ad";
   let trailOn=true;               try{if(localStorage.getItem(TKEY)==="0")trailOn=false;}catch(e){}
+  // MVP scope: ON = only the spec'd v1 requirements (thread + composer + card states, reactions,
+  // flagging, notification settings); the experimental timeline/action-bar layers are hidden.
+  let mvpOn=false;                try{if(localStorage.getItem(MVP_KEY)==="1")mvpOn=true;}catch(e){}
+  if(mvpOn)document.body.classList.add("tlc-mvp");
+  // simulated sticky bottom anchor ad — page condition, applies in MVP and full mode alike
+  let adOn=false;                 try{if(localStorage.getItem(AD_KEY)==="1")adOn=true;}catch(e){}
+  if(adOn)document.body.classList.add("tlc-adon");
   // mobile timeline bar position: off | top (under the nav) | bottom (docked above the bottom bar —
   // the Page 3 iteration, default). Legacy stored values: "1"→bottom, "0"→off.
   let mbarPos="bottom";
@@ -495,6 +531,9 @@
   let cmtState="populated";       // populated | empty | loading  (not persisted — demo control)
   let sortMode="recent";          // recent | popular
   let editingId=null;
+  // single-composer reply mode (Mobbin-validated: HYPE/Spotify/NAVER/Instagram — no inline second box;
+  // the one pinned composer gets a dismissible "Replying to @name ✕" banner): {pid, author} or null
+  let replyCtx=null;
 
   function load(){try{const r=localStorage.getItem(KEY);if(r){const a=JSON.parse(r);if(Array.isArray(a)&&a.length)return a;}}catch(e){}return SEED.slice();}
   function save(){try{localStorage.setItem(KEY,JSON.stringify(comments));}catch(e){}}
@@ -589,7 +628,7 @@
   const DESK=()=>window.innerWidth>=1024;
   function renderTrail(){
     [...trail.querySelectorAll(".tlc-marker")].forEach(m=>m.remove());
-    if(!DESK()||!trailOn||cmtState==="loading"){trail.style.display="none";return;}
+    if(!DESK()||!trailOn||mvpOn||cmtState==="loading"){trail.style.display="none";return;}
     trail.style.display="";
     if(!titleEl||!paras.length)return;
     const x=trailX();
@@ -609,7 +648,7 @@
     updateFill();
   }
   function updateFill(){
-    if(!DESK()||!trailOn)return;
+    if(!DESK()||!trailOn||mvpOn)return;
     if(!titleEl||!paras.length)return;
     const top=bandTop(),bot=bandBot();
     const readY=Math.min(bot,Math.max(top,window.scrollY+window.innerHeight*REF));
@@ -655,12 +694,14 @@
       // chrome above it) plus a clear 20px between the track and the action bar — the Figma gap.
       mbar.classList.add("tlc-mbar-bot");mbar.style.top="auto";
       const at=abar.getBoundingClientRect().top;
-      mbar.style.height=Math.max(24,window.innerHeight-at+23)+"px";
+      // panel runs down to the screen bottom — or to the top of the anchor ad when that's showing
+      const bot=(adOn&&adEl.classList.contains("on"))?adEl.getBoundingClientRect().top:window.innerHeight;
+      mbar.style.height=Math.max(24,bot-at+23)+"px";
     }else{mbar.classList.remove("tlc-mbar-bot");mbar.style.height="";mbar.style.top=headerBottom()+"px";}
   }
   function renderMbar(){
     [...mtrack.querySelectorAll(".tlc-mdot")].forEach(d=>d.remove());
-    if(DESK()||mbarPos==="off"||cmtState==="loading"){mbar.style.display="none";closeMcard();return;}
+    if(DESK()||mvpOn||mbarPos==="off"||cmtState==="loading"){mbar.style.display="none";closeMcard();return;}
     mbar.style.display="block";placeMbar();
     mclusters=buildMClusters();
     for(let i=0;i<mclusters.length;i++){const cl=mclusters[i];const lead=mLead(cl.items);
@@ -671,7 +712,7 @@
     updateMbar();
   }
   function updateMbar(){
-    if(DESK()||mbarPos==="off"||mbar.style.display==="none")return;
+    if(DESK()||mvpOn||mbarPos==="off"||mbar.style.display==="none")return;
     placeMbar();
     const cur=curProgress();mfill.style.width=cur+"%";
     mtrack.querySelectorAll(".tlc-mdot").forEach(d=>{const cl=mclusters[+d.dataset.i];if(!cl)return;
@@ -780,17 +821,21 @@
     return '<div class="tlc-menu-wrap"><button class="tlc-more" data-id="'+c.id+'" aria-label="More">⋯</button>'+
       '<div class="tlc-menu" data-for="'+c.id+'" style="display:none">'+items+'</div></div>';
   }
-  function phCard(text,replies,reply){
+  function phCard(text,replies,reply,pid){
     return '<div class="tlc-cmt tlc-ph'+(reply?' tlc-reply':'')+'"><span class="tlc-av'+(reply?' sm':'')+'" style="background:#c7ccd1">–</span>'+
       '<div class="tlc-main"><div class="tlc-tx tlc-phtx">'+text+'</div>'+
-      (replies&&replies.length?'<div class="tlc-replies">'+replies.map(replyHtml).join("")+'</div>':'')+'</div></div>';
+      (replies&&replies.length?'<div class="tlc-replies">'+replies.map(r=>replyHtml(r,pid)).join("")+'</div>':'')+'</div></div>';
   }
-  function replyHtml(r){
+  // pid = the top-level parent's id. Replies to a reply stay in this same (single) tier: the Reply
+  // button on a reply reopens the parent's box with an "@author " mention prefilled — max one level.
+  function replyHtml(r,pid){
     if(r.removed)return phCard("[removed by moderator]",null,true);
     if(r.deleted)return phCard("[deleted by author]",null,true);
+    const tx=esc(r.text).replace(/^(@[A-Za-z0-9_.\-]+)/,'<span class="tlc-mention">$1</span>');
     return '<div class="tlc-cmt tlc-reply" data-id="'+r.id+'"><span class="tlc-av sm" style="background:'+colorFor(r.author)+'">'+initials(r.author)+'</span>'+
-      '<div class="tlc-main"><div class="tlc-top"><span class="tlc-nm">@'+esc(r.author)+'</span><span class="tlc-tm">'+r.time+' ago</span>'+(r.edited?'<span class="tlc-tm">· edited</span>':'')+'</div><div class="tlc-tx">'+esc(r.text)+'</div>'+
-      '<div class="tlc-acts"><button class="tlc-like'+'" data-id="'+r.id+'">'+HEART+'<span>'+r.likes+'</span></button>'+menuHtml(r,true)+'</div>'+
+      '<div class="tlc-main"><div class="tlc-top"><span class="tlc-nm">@'+esc(r.author)+'</span><span class="tlc-tm">'+r.time+' ago</span>'+(r.edited?'<span class="tlc-tm">· edited</span>':'')+'</div><div class="tlc-tx">'+tx+'</div>'+
+      '<div class="tlc-acts"><button class="tlc-like'+'" data-id="'+r.id+'">'+HEART+'<span>'+r.likes+'</span></button>'+
+      (pid?'<button class="tlc-replyb" data-id="'+pid+'" data-to="'+esc(r.author)+'">'+RIC+'Reply</button>':'')+menuHtml(r,true)+'</div>'+
       (r.reported?'<div class="tlc-reported-note">You reported this reply — our team will review it.</div>':'')+'</div></div>';
   }
   function editCard(c,opts){
@@ -801,11 +846,12 @@
       '</div></div>';
   }
   function cmtHtml(c,opts){opts=opts||{};const replies=c.replies||[];
-    if(c.removed) return phCard("[removed by moderator]",replies,false);
-    if(c.deleted) return phCard("[deleted by author]",replies,false);
+    if(c.removed) return phCard("[removed by moderator]",replies,false,c.id);
+    if(c.deleted) return phCard("[deleted by author]",replies,false,c.id);
     if(editingId===c.id) return editCard(c,opts);
     let tag="";
-    if(opts.tag){const s=sectionInfo(c);tag=s.snip?'<div class="tlc-snip" data-p="'+c.progress+'" role="button" tabindex="0" title="Jump to this part of the article">“'+esc(s.snip)+'”</div>':'';}
+    if(mvpOn){}   // MVP scope: plain cards — no progress snippet/badge (timeline anchors are beyond v1)
+    else if(opts.tag){const s=sectionInfo(c);tag=s.snip?'<div class="tlc-snip" data-p="'+c.progress+'" role="button" tabindex="0" title="Jump to this part of the article">“'+esc(s.snip)+'”</div>':'';}
     else{tag='<span class="tlc-badge" style="margin-bottom:4px;display:inline-block">'+Math.round(c.progress)+'%</span>';}
     return '<div class="tlc-cmt" data-id="'+c.id+'"><span class="tlc-av" style="background:'+colorFor(c.author)+'">'+initials(c.author)+'</span>'+
       '<div class="tlc-main"><div class="tlc-top"><span class="tlc-nm">@'+esc(c.author)+'</span><span class="tlc-tm">'+c.time+' ago</span>'+(c.edited?'<span class="tlc-tm">· edited</span>':'')+'</div>'+
@@ -813,12 +859,12 @@
       '<div class="tlc-acts"><button class="tlc-like" data-id="'+c.id+'">'+HEART+'<span>'+c.likes+'</span></button>'+
       (c.likes>0?'<button class="tlc-reactors-t" data-id="'+c.id+'">Who reacted</button>':'')+
       '<button class="tlc-replyb" data-id="'+c.id+'">'+RIC+'Reply'+(replies.length?' · '+replies.length:'')+'</button>'+
-      (opts.tag?'':'<button class="tlc-jump" data-p="'+c.progress+'">Jump to spot</button>')+
+      ((opts.tag||mvpOn)?'':'<button class="tlc-jump" data-p="'+c.progress+'">Jump to spot</button>')+
       menuHtml(c,false)+'</div>'+
       reactorsHtml(c)+
       (c.reported?'<div class="tlc-reported-note">You reported this comment — our team will review it.</div>':'')+
-      (replies.length?'<div class="tlc-replies">'+replies.map(replyHtml).join("")+'</div>':'')+
-      '<div class="tlc-rbox" data-for="'+c.id+'" style="display:none"><input class="tlc-rinput" placeholder="Reply to @'+esc(c.author)+'…"/><button class="tlc-rsend" data-id="'+c.id+'">Reply</button></div>'+
+      (replies.length?'<div class="tlc-replies">'+replies.map(r=>replyHtml(r,c.id)).join("")+'</div>':'')+
+      (opts.tag?'':'<div class="tlc-rbox" data-for="'+c.id+'" style="display:none"><input class="tlc-rinput" placeholder="Reply to @'+esc(c.author)+'…"/><button class="tlc-rsend" data-id="'+c.id+'">Reply</button></div>')+
       '</div></div>';}
 
   /* ---------------- shared composer (auth gate / banned / guidelines / editor) ---------------- */
@@ -839,12 +885,13 @@
       '<button class="tlc-glok">I agree &amp; continue</button></div>';
   }
   function editorHtml(kind){
-    let quote="";
-    if(kind==="drawer"&&composeQuote){const q=composeQuote.length>180?composeQuote.slice(0,180)+"…":composeQuote;
-      quote='<div class="tlc-dw-quote"><span class="q">“'+esc(q)+'”</span><button class="x tlc-dw-qx" aria-label="Remove quote">×</button></div>';}
-    const ph=(kind==="drawer"&&composeQuote)?"Add your thoughts on this passage…":(pageType==="list"?"Comment on this list…":"Join the discussion…");
-    return quote+'<textarea class="tlc-ta" rows="2" placeholder="'+ph+'"></textarea>'+
-      '<div class="tlc-comp-foot"><span class="tlc-counter">0 / 2000</span><button class="tlc-post">Post comment</button></div>';
+    let chip="";
+    if(replyCtx){chip='<div class="tlc-dw-quote"><span class="q">Replying to <b>@'+esc(replyCtx.author)+'</b></span><button class="x tlc-rc-x" aria-label="Cancel reply">×</button></div>';}
+    else if(kind==="drawer"&&composeQuote){const q=composeQuote.length>180?composeQuote.slice(0,180)+"…":composeQuote;
+      chip='<div class="tlc-dw-quote"><span class="q">“'+esc(q)+'”</span><button class="x tlc-dw-qx" aria-label="Remove quote">×</button></div>';}
+    const ph=replyCtx?("Reply to @"+replyCtx.author+"…"):(kind==="drawer"&&composeQuote)?"Add your thoughts on this passage…":(pageType==="list"?"Comment on this list…":"Join the discussion…");
+    return chip+'<textarea class="tlc-ta" rows="2" placeholder="'+esc(ph)+'"></textarea>'+
+      '<div class="tlc-comp-foot"><span class="tlc-counter">0 / 2000</span><button class="tlc-post">'+(replyCtx?"Post reply":"Post comment")+'</button></div>';
   }
   function composerInner(kind){
     if(isAnon())return authGateHtml();
@@ -863,6 +910,10 @@
   function submitComposer(container,kind){
     const ta=container.querySelector("textarea.tlc-ta");if(!ta)return;
     const t=(ta.value||"").trim();if(!t||t.length>2000||!canPost())return;
+    if(replyCtx){   // reply mode: append to the parent thread (one flat tier) instead of posting top-level
+      const par=comments.find(c=>c.id===replyCtx.pid);
+      if(par)(par.replies=par.replies||[]).push({id:"r"+Date.now(),author:CURRENT_USER,text:t,time:"now",likes:0,ts:Date.now()});
+      replyCtx=null;save();toast("Reply posted.");refresh();return;}
     const c={id:"u"+Date.now(),author:CURRENT_USER,progress:0,text:t,time:"now",likes:0,ts:Date.now()};
     if(kind==="drawer"&&composeQuote){c.quote=composeQuote;c.progress=composeQuoteP;}
     comments.push(c);save();
@@ -874,6 +925,10 @@
     container.addEventListener("click",e=>{
       if(e.target.closest(".tlc-signin")||e.target.closest(".tlc-signup")){setUser("user");toast("Signed in (demo).");return;}
       if(e.target.closest(".tlc-glok")){guidelinesAccepted=true;persist(GL_KEY,"1");syncProto();refresh();toast("Thanks — you can post now.");return;}
+      if(e.target.closest(".tlc-rc-x")){   // cancel reply mode; keep whatever was typed
+        const ta=container.querySelector("textarea.tlc-ta");const keep=ta?ta.value:"";
+        replyCtx=null;rerenderComposer(kind);
+        const t2=container.querySelector("textarea.tlc-ta");if(t2){t2.value=keep;updateCounter(container);}return;}
       if(e.target.closest(".tlc-dw-qx")){composeQuote=null;renderDrawerComposer();return;}
       if(e.target.closest(".tlc-post")){submitComposer(container,kind);return;}
     });
@@ -910,8 +965,10 @@
     '<div class="tlc-cend-comp" id="tlcCendComp"></div>'+
     '<div class="tlc-cend-list" id="tlcCendL"></div>'+
     '<button class="tlc-loadmore" id="tlcCendMore" style="display:none">Load more</button></div></div>';
-  const footer=document.querySelector("footer");
-  if(footer&&footer.parentNode)footer.parentNode.insertBefore(cend,footer);else document.body.appendChild(cend);
+  // Build 45: comments are NOT on the page anymore — you can't scroll to them. The thread lives ONLY
+  // in the drawer (desktop side sheet / mobile bottom sheet), opened via FAB / action-bar comment /
+  // markers / select-to-comment. The cend element stays DETACHED (never inserted) so the render +
+  // composer wiring below keeps working and reverting is a one-line change.
   const cendH=cend.querySelector("#tlcCendH"),cendCount=cend.querySelector("#tlcCendN"),cendSort=cend.querySelector("#tlcCendSort"),
     cendNote=cend.querySelector("#tlcCendNote"),cendComp=cend.querySelector("#tlcCendComp"),cendList=cend.querySelector("#tlcCendL"),cendMore=cend.querySelector("#tlcCendMore");
   function sortControlHtml(){return '<div class="tlc-sort"><span class="lbl">Sort</span>'+
@@ -921,7 +978,7 @@
   function emptyStateHtml(){return '<div class="tlc-empty tlc-empty-lg"><div class="ico">💬</div><div class="t">No comments yet</div>'+
     '<div class="s">Be the first to share your thoughts on this '+(pageType==="list"?"list":"story")+'.</div></div>';}
   function renderEndComposer(){cendComp.innerHTML=composerInner("end");updateCounter(cendComp);}
-  function renderEnd(){if(!cendList)return;
+  function renderEnd(){if(!cendList||!cend.parentNode)return;   // detached since Build 45 — drawer-only
     cendH.innerHTML=(pageType==="list"?"Reader comments ":"Comments ")+'<span id="tlcCendN">('+countLabel()+")</span>";
     cendSort.innerHTML=(cmtState==="loading")?"":sortControlHtml();
     cendNote.innerHTML=(pageType==="list")?'<div class="tlc-pt-note">You’re commenting on this list overall — not a single entry. Comments appear on the list page for every reader.</div>':"";
@@ -950,10 +1007,23 @@
     else{const list=sortComments(visibleComments());dwB.innerHTML=list.length?list.map(c=>cmtHtml(c,{tag:true})).join(""):emptyStateHtml();}
     renderDrawerComposer();}
   function showDrawer(){drawer.classList.add("tlc-show");dim.classList.add("tlc-show");}
-  function openDrawer(){composeQuote=null;renderDrawer();showDrawer();}
-  function openDrawerWithQuote(quote,progress){composeQuoteP=progress;composeQuote=quote;renderDrawer();showDrawer();
+  function openDrawer(){composeQuote=null;replyCtx=null;renderDrawer();showDrawer();}
+  function openDrawerWithQuote(quote,progress){composeQuoteP=progress;composeQuote=quote;replyCtx=null;renderDrawer();showDrawer();
     const ta=dwComp.querySelector("textarea.tlc-ta");if(ta)setTimeout(()=>ta.focus(),340);}
   function closeDrawer(){drawer.classList.remove("tlc-show");dim.classList.remove("tlc-show");}
+  function rerenderComposer(kind){if(kind==="drawer")renderDrawerComposer();else renderEndComposer();}
+  // single-composer reply mode: the surface's own pinned composer becomes the reply box — banner chip,
+  // reply placeholder, and (for reply-to-reply) the "@name " mention prefilled into the text
+  function startReply(pid,author,mention,kind){
+    replyCtx={pid:pid,author:author};
+    if(kind==="drawer")composeQuote=null;
+    rerenderComposer(kind);
+    const box=kind==="drawer"?dwComp:cendComp;
+    const ta=box.querySelector("textarea.tlc-ta");
+    if(kind==="end")box.scrollIntoView({behavior:"smooth",block:"center"});
+    if(ta){if(mention&&!ta.value.trim())ta.value="@"+author+" ";updateCounter(box);
+      setTimeout(()=>{ta.focus();ta.setSelectionRange(ta.value.length,ta.value.length);},kind==="end"?350:0);}
+  }
 
   function updateFab(){const n=visibleComments().length;fab.innerHTML=FAB_ICON+"Comments"+(cmtState!=="loading"&&n?" · "+n:"");
     const ac=document.getElementById("tlcAbCmt");if(ac)ac.textContent=cmtState==="loading"?"":n;}
@@ -986,7 +1056,19 @@
     const ec=e.target.closest(".tlc-edit-cancel");if(ec){editingId=null;refresh();return;}
     // reply
     const rb=e.target.closest(".tlc-replyb");if(rb){if(!canWrite()){toast(isBanned()?"Your account is suspended.":"Sign in to reply.");return;}
-      const box=root.querySelector('.tlc-rbox[data-for="'+rb.dataset.id+'"]');if(box){const o=box.style.display!=="flex";box.style.display=o?"flex":"none";if(o){const i=box.querySelector(".tlc-rinput");if(i)i.focus();}}return;}
+      const pid=rb.dataset.id,to=rb.dataset.to;   // to = set only on reply-tier buttons (reply-to-reply)
+      const box=root.querySelector('.tlc-rbox[data-for="'+pid+'"]');
+      if(box){   // sheet: no persistent composer there, keep the inline box (with @mention for reply-to-reply)
+        const i=box.querySelector(".tlc-rinput");
+        if(to){box.style.display="flex";
+          if(i){const m="@"+to+" ";if(!i.value.trim()||/^@[A-Za-z0-9_.\-]+\s*$/.test(i.value))i.value=m;
+            i.focus();i.setSelectionRange(i.value.length,i.value.length);}}
+        else{const o=box.style.display!=="flex";box.style.display=o?"flex":"none";if(o&&i)i.focus();}
+        return;}
+      // feed / drawer: ONE composer — put the surface's pinned composer into reply mode
+      const par=findById(pid);
+      startReply(pid,to||(par?par.author:""),!!to,root===dwB?"drawer":"end");
+      return;}
     const rs=e.target.closest(".tlc-rsend");if(rs){if(!canWrite()){toast("Sign in to reply.");return;}doReply(rs.closest(".tlc-rbox"),rs.dataset.id);return;}
     const j=e.target.closest(".tlc-snip,.tlc-jump");if(j){jumpTo(parseFloat(j.dataset.p));}}
   function onKey(e){const i=e.target.closest(".tlc-rinput");if(i&&e.key==="Enter"){e.preventDefault();const b=i.closest(".tlc-rbox");doReply(b,b.dataset.for);return;}
@@ -1044,6 +1126,7 @@
         TIP='<span class="tlc-ab-tip tlc-ab-cap"></span>';
   function renderAbar(){
     abar.className="tlc-abar";
+    if(mvpOn){abar.innerHTML="";return;}   // MVP scope: no action bar — the FAB is the mobile entry point
     if(!rerankActive()){abar.innerHTML=esBtns(true);return;}
     if(rerankVar==="stacked"){abar.classList.add("tlc-abar-stack");
       abar.innerHTML='<div class="tlc-ab-pill">'+esBtns(true)+'</div>'+
@@ -1104,6 +1187,26 @@
       clearTimeout(swapT);swapT=setTimeout(()=>{swapNav=false;morphAbar();},1600);}
   }
 
+  // simulated sticky bottom anchor ad (Build 44, from the user's live screenshot): COMPLEX mark ·
+  // green 320×50-style creative · dismiss ✕. Pure page condition — the comment UI floats above it
+  // via the tlc-adon body offsets; the ✕ dismisses it (same as the real ad's close).
+  const adEl=document.createElement("div");adEl.className="tlc-ad"+(adOn?" on":"");
+  adEl.setAttribute("aria-label","Advertisement");
+  adEl.innerHTML='<span class="ad-mark">COM<br>PLEX</span>'+
+    '<div class="ad-cr"><div class="ad-tx"><div class="l1">The #1 National LTL Carrier for Quality*</div>'+
+    '<div class="l2">Always Delivers</div>'+
+    '<div class="l3">*The Mastio Quality Award is a trademark of Mastio &amp; Company. © 2025 ODFL</div></div>'+
+    '<button class="ad-cta">Learn more</button></div>'+
+    '<button class="ad-x" aria-label="Close ad">'+X_SVG+'</button>';
+  document.body.appendChild(adEl);
+  function setAd(v){adOn=!!v;persist(AD_KEY,adOn?"1":"0");
+    adEl.classList.toggle("on",adOn);document.body.classList.toggle("tlc-adon",adOn);
+    syncProto();renderMbar();}
+  adEl.addEventListener("click",e=>{
+    if(e.target.closest(".ad-x")){setAd(false);toast("Ad dismissed.");return;}
+    if(e.target.closest(".ad-cta")){toast("Ad click (simulated).");return;}
+  });
+
   // re-rank bottom sheet (reader builds their own ranking of the article's list items)
   const RR_FALLBACK=[{name:"Air Jordan 12 “Flu Game”"},{name:"Air Jordan 6 “Infrared”"},{name:"Kobe 6 “Grinch”"},
     {name:"LeBron 8 “South Beach”"},{name:"KD 4 “Weatherman”"},{name:"Nike Kyrie 3"},{name:"Air Jordan 11 “Space Jam”"},{name:"Kobe 5 “Lakers”"}];
@@ -1149,6 +1252,9 @@
   const proto=document.createElement("div");proto.className="tlc-proto";
   proto.innerHTML='<button class="tlc-proto-tog" id="tlcProtoTog"><i></i>Prototype</button>'+
     '<div class="tlc-proto-body">'+
+      '<div class="tlc-pg"><div class="tlc-prow"><span class="lbl">MVP</span>'+
+        '<button class="tlc-switch" id="tlcSwMVP" role="switch" aria-label="MVP scope"><span class="knob"></span></button></div>'+
+        '<div class="tlc-pnote">Only the v1 spec: comments drawer (desktop side sheet / mobile bottom sheet) with empty, loading and sort states, composer states, card states, reactions, flagging, notification settings. Hides the timeline / action-bar experiments (their controls below are ignored).</div></div>'+
       '<div class="tlc-pg"><span class="cap">Viewer</span><div class="tlc-seg" data-g="user">'+
         '<button data-v="anon">Guest</button><button data-v="user">Signed in</button><button data-v="banned">Banned</button></div></div>'+
       '<div class="tlc-pg"><div class="tlc-prow"><span class="lbl">First-time user</span>'+
@@ -1158,13 +1264,16 @@
         '<button data-v="populated">Populated</button><button data-v="empty">Empty</button><button data-v="loading">Loading</button></div></div>'+
       '<div class="tlc-pg"><span class="cap">Template</span><div class="tlc-seg" data-g="page">'+
         '<button data-v="article">Article</button><button data-v="list">List</button></div></div>'+
-      '<div class="tlc-pg tlc-pg-timeline"><div class="tlc-prow"><span class="lbl">Margin timeline</span>'+
+      '<div class="tlc-pg"><div class="tlc-prow"><span class="lbl">Bottom anchor ad</span>'+
+        '<button class="tlc-switch" id="tlcSwAD" role="switch" aria-label="Bottom anchor ad"><span class="knob"></span></button></div>'+
+        '<div class="tlc-pnote">Simulates the sticky ad pinned to the screen bottom on the live site — the floating comment UI lifts above it. Applies in MVP too.</div></div>'+
+      '<div class="tlc-pg tlc-pg-timeline tlc-pg-exp"><div class="tlc-prow"><span class="lbl">Margin timeline</span>'+
         '<button class="tlc-switch" id="tlcSwTL" role="switch" aria-label="Toggle timeline"><span class="knob"></span></button></div>'+
         '<div class="tlc-pnote">Desktop-only reading-progress trail (left margin).</div></div>'+
-      '<div class="tlc-pg"><span class="cap">Timeline bar (mobile)</span>'+
+      '<div class="tlc-pg tlc-pg-exp"><span class="cap">Timeline bar (mobile)</span>'+
         '<div class="tlc-seg" data-g="mbar"><button data-v="off">Off</button><button data-v="top">Top</button><button data-v="bottom">Bottom</button></div>'+
         '<div class="tlc-pnote">Slim scroll-progress bar with comment DP dots (tap a dot) — under the nav (Top) or docked above the bottom bar with cards opening upward (Bottom, the Page 3 iteration).</div></div>'+
-      '<div class="tlc-pg"><span class="cap">Re-rank ⨯ essentials (mobile)</span>'+
+      '<div class="tlc-pg tlc-pg-exp"><span class="cap">Re-rank ⨯ essentials (mobile)</span>'+
         '<select class="tlc-sel" id="tlcSelRR"><option value="off">Essentials only</option><option value="stacked">Both, stacked (today)</option>'+
         '<option value="deck">One card, two rows</option><option value="unified">One pill, single row</option>'+
         '<option value="flank">Edge arrows + pill</option><option value="swap">Auto-swap on scroll</option>'+
@@ -1187,7 +1296,12 @@
     const tl=protoBody.querySelector("#tlcSwTL");if(tl)tl.setAttribute("aria-checked",trailOn?"true":"false");
     protoBody.querySelectorAll('.tlc-seg[data-g="mbar"] button').forEach(b=>b.classList.toggle("active",b.dataset.v===mbarPos));
     const rrs=protoBody.querySelector("#tlcSelRR");if(rrs)rrs.value=rerankVar;
+    const mv=protoBody.querySelector("#tlcSwMVP");if(mv)mv.setAttribute("aria-checked",mvpOn?"true":"false");
+    const aw=protoBody.querySelector("#tlcSwAD");if(aw)aw.setAttribute("aria-checked",adOn?"true":"false");
+    protoBody.querySelectorAll(".tlc-pg-exp").forEach(g=>g.classList.toggle("mvpdim",mvpOn));
   }
+  function setMvp(v){mvpOn=!!v;persist(MVP_KEY,mvpOn?"1":"0");document.body.classList.toggle("tlc-mvp",mvpOn);
+    hideSel();closeMcard();syncProto();refresh();}
   protoBody.addEventListener("click",e=>{
     const seg=e.target.closest(".tlc-seg button");
     if(seg){const g=seg.parentElement.dataset.g,v=seg.dataset.v;
@@ -1198,9 +1312,11 @@
       return;}
     if(e.target.closest("#tlcSwGL")){guidelinesAccepted=!guidelinesAccepted;persist(GL_KEY,guidelinesAccepted?"1":"0");syncProto();refresh();return;}
     if(e.target.closest("#tlcSwTL")){trailOn=!trailOn;persist(TKEY,trailOn?"1":"0");syncProto();renderTrail();return;}
+    if(e.target.closest("#tlcSwMVP")){setMvp(!mvpOn);return;}
+    if(e.target.closest("#tlcSwAD")){setAd(!adOn);return;}
     if(e.target.closest("#tlcNsOpen")){openNs();return;}
     if(e.target.closest("#tlcReset")){comments=SEED.slice();try{localStorage.removeItem(KEY);}catch(_){}guidelinesAccepted=false;persist(GL_KEY,"0");
-      cmtState="populated";editingId=null;sortMode="recent";
+      cmtState="populated";editingId=null;sortMode="recent";replyCtx=null;
       try{localStorage.removeItem(RRO_KEY);}catch(_){}rerankItems.sort((a,b)=>rerankDefault.indexOf(a.name)-rerankDefault.indexOf(b.name));rerankDone=false;
       syncProto();refresh();toast("Demo data reset.");return;}
   });
@@ -1257,6 +1373,7 @@
     return txt;
   }
   function showSel(){
+    if(mvpOn){hideSel();return;}   // select-to-comment is beyond the MVP scope
     const txt=selectionText();
     if(!txt){hideSel();return;}
     const rect=window.getSelection().getRangeAt(0).getBoundingClientRect();
@@ -1284,12 +1401,14 @@
       else if(d.type==="trail"){trailOn=!!d.value;persist(TKEY,trailOn?"1":"0");syncProto();renderTrail();}
       else if(d.type==="mbar"){const v=d.value;   // accepts "off"/"top"/"bottom" (legacy booleans: true→bottom)
         mbarPos=(v==="top"||v==="bottom"||v==="off")?v:(v?"bottom":"off");persist(MBAR_KEY,mbarPos);syncProto();renderMbar();}
+      else if(d.type==="mvp")setMvp(!!d.value);
+      else if(d.type==="ad")setAd(!!d.value);
       else if(d.type==="rerank"){rerankVar=RR_VARS.indexOf(d.value)>=0?d.value:"off";persist(RRV_KEY,rerankVar);
         if(rerankVar!=="off"&&pageType!=="list"){pageType="list";persist(PT_KEY,"list");}
         syncProto();refresh();}
       else if(d.type==="ns")openNs();
       else if(d.type==="reset"){comments=SEED.slice();try{localStorage.removeItem(KEY);}catch(_){}
-        guidelinesAccepted=false;persist(GL_KEY,"0");cmtState="populated";editingId=null;sortMode="recent";syncProto();refresh();}
+        guidelinesAccepted=false;persist(GL_KEY,"0");cmtState="populated";editingId=null;sortMode="recent";replyCtx=null;syncProto();refresh();}
     });
     try{parent.postMessage({__tlc:1,type:"ready"},"*");}catch(_){}
   }

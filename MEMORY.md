@@ -2,7 +2,20 @@
 
 Running log of decisions, rationale, and state. Newest first. Update every build.
 
-> **Current state = Build 41 (2026-07-10), NOW ON GITHUB + VERCEL:** repo
+> **Current state = Build 45 (2026-07-10), LOCAL-ONLY — not committed/pushed yet per the user**
+> (the deployed site still shows Build 41). Build 45 = **comments are OFF the page** — no scrollable
+> end-of-page section; the thread lives ONLY in the drawer (desktop side sheet / mobile bottom
+> sheet). Build 44 = **bottom anchor-ad simulation** ("Bottom
+> anchor ad" switch, `complex-tlc-ad`, bridge `ad` — sticky 50px ad bar at the viewport bottom;
+> `tlc-adon` lifts FAB/abar/timeline panel above it; page condition, applies in MVP too).
+> Build 43 = **flat reply-to-reply (@name mention, max one
+> tier) + single composer per surface** (reply mode with "Replying to @name ✕" banner — Mobbin-
+> validated; storage key → `complex-tlc-live-v4`). Build 42 = the **MVP toggle** (panel + canvas
+> rail + bridge, persisted `complex-tlc-mvp`): ON shows only the spec'd v1 comment-thread
+> requirements and hides trail / timeline bar / action bar / re-rank / select-to-comment; mobile
+> entry point reverts to the Comment FAB. See the entries below.
+>
+> **Build 41 state, ON GITHUB + VERCEL:** repo
 > **https://github.com/daniiyalali/comments** — push `main` → auto-deploy; the deployed root is the
 > **canvas harness**, `/prototype.html` is the bare prototype (`build_live.py` packages `dist/`
 > itself, no manual copy).
@@ -21,6 +34,100 @@ Running log of decisions, rationale, and state. Newest first. Update every build
 > https://www.figma.com/design/Ils4e9Naytz66xI6UJ1G49/Comments-Exp (see the entry below).
 
 ---
+
+## 2026-07-10 — Build 45: comments removed from the page (drawer-only) — LOCAL-ONLY, not pushed
+- **User:** "remove the comments from the page. So you can't just scroll to them. It's only side
+  sheet on desktop and bottom sheet on mobile." Applies in MVP and full mode.
+- **Implementation:** the `.tlc-cend` end-of-page section is **never inserted into the DOM** — the
+  element and ALL its render/composer wiring stay in `live-inject.js` (detached node; `renderEnd`
+  early-returns on `!cend.parentNode`) so reverting = restoring the one insertBefore line. Entry
+  points to the drawer: FAB (desktop + MVP mobile), action-bar comment button (full-mode mobile),
+  trail markers → sheet (desktop), timeline-bar dots → card → "View in thread", select-to-comment.
+  The drawer already carried empty/loading/sort states and the full list, so nothing was lost.
+  MVP note copy updated in both panel + canvas rail ("comments drawer … " instead of "end-of-page
+  thread + drawer"). The feed-reply path (`startReply(kind="end")`) is now unreachable but kept.
+- **Verified:** JavaScriptCore syntax OK; rebuild OK (749,451 bytes). Still LOCAL-ONLY (42–45).
+
+## 2026-07-10 — Build 44: sticky bottom anchor-ad simulation — LOCAL-ONLY, not pushed
+- **User (with a live screenshot):** "sometimes we have this ad at the bottom, please add a toggle to
+  simulate the ad." The live page pins a full-width **anchor ad** to the viewport bottom: small
+  stacked COMPLEX mark on the left, a green 320×50-style creative (LTL carrier: "THE #1 NATIONAL LTL
+  CARRIER FOR QUALITY* / ALWAYS DELIVERS" + LEARN MORE + tiny legal line), dismiss ✕ on the right.
+- **Why it matters:** it's the stress case for the whole bottom stack — action bar, bottom timeline
+  panel, and FAB must clear the ad, in every layout variant AND in MVP mode.
+- **Implementation (`live-inject.js`):** `.tlc-ad` fixed bar (z 2147483065, 50px content + safe-area,
+  white gutters + recreated creative; ✕ dismisses = toggles off with toast, CTA toasts "simulated").
+  `adOn` persisted `complex-tlc-ad` + **`tlc-adon` body class** offsets: FAB 20→70px, abar 16→66px,
+  `.tlc-mbar-bot` 0→50px (+safe-area), proto panel 20→70px; `placeMbar()` now ends the bottom
+  timeline panel at the **measured ad top edge** instead of the screen bottom. Drawer/sheets (higher
+  z) still slide over the ad — modal surfaces. Controls: `#tlcSwAD` in the in-page panel (grouped
+  with the page conditions after Template — deliberately NOT `.tlc-pg-exp`, so it does NOT gray out
+  in MVP; it's a page condition, valid in both modes), `#swAD` in the canvas rail, bridge
+  `{type:"ad"}` in `sendAll`. Default OFF.
+- **Verified:** JavaScriptCore syntax OK; rebuild OK (749,106 bytes); ad markup + switches confirmed
+  in `index.html` and `dist/`. Still LOCAL-ONLY (Builds 42–44 uncommitted).
+
+## 2026-07-10 — Build 43: flat reply-to-reply + one composer per surface — LOCAL-ONLY, not pushed
+- **User spec:** replies to replies are allowed, but the hierarchy stays **max one level deep** —
+  replying to a reply lands in the same indented tier and just carries an "@name" of who's being
+  answered (YouTube/Instagram-style flattening). Applies in MVP **and** full mode (same component).
+- **Then, mid-build:** the user noticed that replying put **two comment boxes on screen** (inline
+  reply box + the surface's own composer) and asked to check **Mobbin** and keep ONE box for both.
+  Mobbin confirmed the standard: [HYPE](https://mobbin.com/screens/359350d7-729e-4ba4-8e4f-7f6967fe4ae8)
+  (publisher), [Spotify](https://mobbin.com/screens/d8031e04-0c81-4ff0-bf71-d0e466b15412),
+  [NAVER](https://mobbin.com/screens/8321c75a-018f-4f4a-b974-1f357bc5f7fa),
+  [Instagram](https://mobbin.com/screens/30df9dc7-3473-45af-ac50-216c3907d0c6) — one persistent
+  composer that switches into reply mode with a dismissible "Replying to @name ✕" banner above the
+  input (mention prefilled for sub-replies). No inline second box anywhere.
+- **Implementation (`live-inject.js`):**
+  - `replyHtml(r,pid)` — reply cards now have a **Reply** button carrying `data-id`=parent +
+    `data-to`=reply author; `phCard` also threads `pid`. A leading `@mention` in reply text renders
+    via `.tlc-mention` (semibold black). Seed `s6r3` demos it → **storage key bumped
+    `complex-tlc-live-v3` → `v4`** (project rule: bump on seed change).
+  - `replyCtx={pid,author}` + `startReply(pid,author,mention,kind)` — feed (`cendComp`) and drawer
+    (`dwComp`) composers get reply mode: banner chip (reuses `.tlc-dw-quote` styling, ✕ =
+    `.tlc-rc-x` cancels and PRESERVES typed text), placeholder "Reply to @name…", button "Post
+    reply", "@author " prefilled when replying to a reply. `submitComposer` appends to the parent's
+    `replies` and clears `replyCtx`; also cleared on `openDrawer`/quote-open/reset (both paths).
+  - The inline `.tlc-rbox` is **gone from feed + drawer cards** (`opts.tag` gate in `cmtHtml`); the
+    desktop marker **sheet keeps it** — that surface has no persistent composer, so no duplication.
+  - Feed reply scrolls the composer into view (it sits above the list) before focusing.
+- **Verified:** JavaScriptCore syntax OK; rebuild OK (744,772 bytes); `tlc-rc-x`/`startReply`/
+  `tlc-mention` confirmed in `index.html` + `dist/`. Still LOCAL-ONLY per the user.
+- **Figma mirror pending:** card sheet (Reply on replies + @mention) and composer sheet (reply-mode
+  banner state) — add when the Figma catch-up pass happens (sort flip-toggle is also still pending).
+
+## 2026-07-10 — Build 42: MVP toggle (v1 spec scope) — LOCAL-ONLY, not pushed
+- **User asked for an "MVP" toggle in the prototype control**: ON = exactly the v1 requirements list —
+  comment thread on article & list templates (placement/entry point, empty state, loading skeleton,
+  sort toggle, Load more → drawer as the pagination pattern), composer (2,000-char counter, first-time
+  guidelines, auth gate, banned notice), comment card (top-level + one reply tier, edit <5 min,
+  [deleted by author] with replies kept, [removed by moderator]), reactions (affordance + count +
+  expandable who-reacted), report/flag (auth-only) + confirmation, and the profile notification-
+  settings modal (email-on-reply + weekly digest). All of these already existed — MVP mode *subsets*
+  the prototype rather than adding UI.
+- **Hidden while ON** (experimental / beyond-v1 layers): desktop margin trail, mobile timeline bar +
+  its browser card, the mobile action bar and all seven re-rank ⨯ essentials variants,
+  select-to-comment, and the cards' timeline anchors (snippet quotes, "% badge", "Jump to spot").
+  **Mobile entry point reverts to the plain Comment FAB** (`.tlc-mvp .tlc-fab{display:flex!important}`
+  inside the <1024px media block outranks the base mobile hide).
+- **Implementation:** `mvpOn` state (persisted `complex-tlc-mvp`) + a **`tlc-mvp` body class** (CSS
+  belt-and-braces hides `.tlc-trail/.tlc-mbar/.tlc-mcard/.tlc-abar/.tlc-seltip`) + JS guards in
+  `renderTrail`, `updateFill`, `renderMbar`, `updateMbar`, `renderAbar` (early return, empties the
+  bar), `showSel`, and `cmtHtml` (no tag/snip, no jump button). `setMvp()` toggles class + persists +
+  `hideSel()/closeMcard()` + `syncProto()/refresh()`. Switches: `#tlcSwMVP` (in-page panel — moved
+  to the VERY TOP, above Viewer, same day per the user), `#swMVP` (canvas rail — also first, an hr
+  separates it from Viewer), bridge message `{type:"mvp", value:bool}` (sent in `sendAll`).
+  The experiment controls get `.tlc-pg-exp` / `.grp.exp` and gray out (`.mvpdim`, opacity .4 +
+  pointer-events none) while MVP is ON — stored values untouched, so flipping MVP off restores the
+  previous setup exactly.
+- **Verified:** JavaScriptCore syntax check OK; `python3 build_live.py` OK (741,302 bytes, 36 images);
+  toggle markup confirmed present in `index.html`, `dist/prototype.html`, `dist/index.html` (canvas).
+  No visual check possible in this sandbox, as usual.
+- **⚠️ Per the user mid-build: "keep it local for now" — NOT committed, NOT pushed.** Working tree has
+  the Build 42 changes (`live-inject.js`, `canvas.html`, `index.html`, `dist/*`, docs). Figma mirror:
+  no update needed — MVP adds no new UI (the control panel is excluded from the Figma inventory and
+  MVP screens are subsets of existing frames).
 
 ## 2026-07-10 — Repo + deploy: GitHub (daniiyalali/comments) → Vercel; canvas is the deployed root
 - **git init + pushed to https://github.com/daniiyalali/comments** — the push worked via the user's

@@ -1,6 +1,38 @@
 # HANDOFF.md
 
-**Last updated:** 2026-07-10 — Latest code build = **Build 41**: the mobile **timeline bar docks at
+**Last updated:** 2026-07-10 — Latest code build = **Build 45: comments are OFF the page** — you can
+no longer scroll to a comment section; the thread lives **only in the drawer** (desktop side sheet /
+mobile bottom sheet), opened via FAB / action-bar comment / markers / dots / select-to-comment. The
+`.tlc-cend` section element + its code remain in `live-inject.js` but are never inserted (detached;
+`renderEnd` early-returns) — one-line revert. Applies in MVP and full mode. Prior =
+**Build 44: bottom anchor-ad simulation**. The live
+site sometimes pins a sticky anchor ad to the screen bottom (user screenshot: COMPLEX mark · green LTL
+creative · ✕) — new **"Bottom anchor ad" switch** (panel after Template + canvas rail `#swAD` + bridge
+`ad`, persisted `complex-tlc-ad`; a page condition, so it applies in MVP too, NOT grayed by it). ON =
+`.tlc-ad` bar (50px + safe-area, dismissible) and the `tlc-adon` body class lifts all floating bottom
+UI above it: FAB/abar/proto offset up, and the bottom timeline panel stops at the ad's top edge
+(`placeMbar()` measures the ad rect). Drawer/sheets still slide over it. Use it to stress the bottom
+stack: ad + action bar + bottom timeline together. Prior = **Build 43: flat replies + single composer** (both
+MVP and full mode). (a) **Reply-to-reply, flattened:** threads are max ONE level deep — replying to a
+reply stays in the same tier and prefixes an **@name mention** (prefilled "@author ", leading mention
+styled black/semibold `.tlc-mention`; seed s6r3 demos it; storage key bumped → `complex-tlc-live-v4`).
+(b) **ONE comment box per surface** (user spotted two boxes on screen while replying; Mobbin-validated
+against HYPE / Spotify / NAVER / Instagram): in the feed + drawer the inline reply box is GONE —
+tapping Reply puts the surface's pinned composer into **reply mode** with a dismissible "Replying to
+@name ✕" banner (✕ keeps typed text), reply placeholder, "Post reply" button; posting appends to the
+parent thread. Only the desktop marker sheet keeps the inline box (it has no persistent composer).
+Prior build = **Build 42: the MVP toggle** — a new **MVP** switch
+in the prototype control panel + canvas rail (persisted `complex-tlc-mvp`, bridge type `mvp`). ON =
+**only the spec'd v1 requirements**: end-of-page comment thread on both templates (placement/entry,
+empty state, loading skeleton, sort flip toggle, Load more → drawer as the pagination pattern),
+composer (2,000-char counter, first-time community-guidelines, auth gate, banned notice), comment card
+(top-level + one reply tier, edit <5 min, [deleted by author], [removed by moderator]), reactions
+(heart + count + expandable who-reacted), report/flag + confirmation, and the profile notification-
+settings modal (email-on-reply + weekly digest). Everything experimental hides: margin trail, mobile
+timeline bar, action bar / re-rank variants, select-to-comment, and the cards' progress snippets /
+"% badge" / "Jump to spot". On mobile the plain **Comment FAB** returns as the entry point. The
+experiment controls gray out while MVP is ON (values kept). **⚠️ Builds 42–45 are LOCAL-ONLY — per
+the user, NOT committed or pushed yet** (deploy still shows Build 41). Prior build = **Build 41**: the mobile **timeline bar docks at
 the BOTTOM** (user's Figma "Page 3" mock, node 98-100) — top edge of a white panel above the bottom
 action bar (track flush at the panel edge, dots bleed over the article, 20px gap to the action bar,
 bloomed DP 20px); position switchable **Off / Top / Bottom** (default Bottom) in the panel + canvas
@@ -40,8 +72,11 @@ designs & states”, 5 sections, prototype flows wired; only the prototype contr
   card, marker hover → popover, marker click → sheet, FAB → panel, ✕ → back. **Re-Rank stays inert.**
 - Keep the Figma file and `live-inject.js` in sync going forward — if a build changes UI, mirror it.
 
-**Pick up here next session:** open **`canvas.html`** (defaults to Mobile + List + focus layout +
-bottom timeline) — evaluate (a) the **bottom timeline + comment-browser card** (tap dot → centered
+**Pick up here next session:** Builds 42–45 (MVP toggle; flat replies + single composer; anchor-ad
+simulation; drawer-only comments) are **uncommitted local work** — commit + push when
+the user gives the word (push auto-deploys). Then: open **`canvas.html`** (defaults to Mobile + List +
+focus layout + bottom timeline; flip the new **MVP** switch to see the bare v1 scope) — evaluate
+(a) the **bottom timeline + comment-browser card** (tap dot → centered
 card, ‹ › steps comments, article scrolls behind, light-gray paragraph highlight) vs the Top
 placement, and (b) the seven re-rank ⨯ essentials merges; decide what to productionize, then hand to
 eng. **Re-Rank tap is inert on purpose** — that interaction lives in a separate file. **Deploy is
@@ -50,13 +85,16 @@ repo is imported at vercel.com/new (get the `*.vercel.app` URL from the user / d
 root opens the CANVAS, `/prototype.html` is the bare prototype for on-device testing). Entry images
 need HTTPS — blank over `file://` is expected, not a bug. Vercel domain can be renamed / custom
 domain added anytime under Project → Settings → Domains (renaming kills the old link).
-**Figma mirror pending:** sort flip-toggle (Build 37) + the Build 34–41 focus/bottom-bar changes are
-NOT yet mirrored on the Figma inventory page (the user's own Page 2/3 mocks cover the concepts).
+**Figma mirror pending:** sort flip-toggle (Build 37) + the Build 34–41 focus/bottom-bar changes + the
+Build 43 reply changes (Reply on reply cards, @mention, composer reply-mode banner) are NOT yet
+mirrored on the Figma inventory page (the user's own Page 2/3 mocks cover the earlier concepts;
+Build 42 MVP needs no mirror — it subsets existing frames).
 
 ## Review harness — `canvas.html`
 Open this instead of `index.html`. **Desktop ⇄ Mobile** switch + a control rail *outside* the previewed
 UI (the prototype hides its own `.tlc-proto` panel when embedded and is driven via postMessage). Rail
-controls: Viewer (Guest/Signed-in/Banned) · First-time user · Comments (Populated/Empty/Loading) ·
+controls: **MVP at the very top (Build 42: v1 spec only — grays out the experiment controls below)** ·
+Viewer (Guest/Signed-in/Banned) · First-time user · Comments (Populated/Empty/Loading) ·
 Template (Article/List) · Margin timeline (desktop) · **Timeline bar (mobile): Off / Top / Bottom**
 (`#selMB`, default Bottom) · **Re-rank ⨯ essentials**
 (Essentials only / Both stacked / One card two rows / One pill / Edge arrows / Auto-swap / Deck +
@@ -65,10 +103,13 @@ Notification settings · Reset · Reload. Picking a merge layout auto-switches T
 only exists on list articles).
 
 ## What's in the prototype now
-- **Comment thread:** end-of-page section + entry points; empty state, loading skeleton, sort (recent/
-  popular), "Load more" → drawer.
+- **Comment thread (Build 45: drawer-ONLY — no on-page section to scroll to):** desktop side sheet /
+  mobile bottom sheet; empty state, loading skeleton, sort flip (recent/popular); entry via FAB,
+  action-bar comment, markers/dots, select-to-comment.
 - **Composer:** 2,000-char counter; first-time community-guidelines; auth gate (guest); banned notice.
-- **Comment card:** top-level + one reply tier; Edit (<5 min); [deleted by author]; [removed by moderator].
+- **Comment card:** top-level + ONE flat reply tier (Build 43: reply-to-reply stays in the tier with an
+  @name mention; Reply on feed/drawer cards drives the surface's single pinned composer — "Replying to
+  @name ✕" banner, no inline box); Edit (<5 min); [deleted by author]; [removed by moderator].
 - **Reactions:** heart + count + "Who reacted" list. **Flagging:** Report (auth) + confirmation.
 - **Profile:** Notification settings modal (email-on-reply + weekly digest).
 - **Desktop:** left **margin timeline** trail (toggle) + comment FAB.

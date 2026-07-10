@@ -35,6 +35,7 @@
   .sw .knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .18s;}
   .sw[aria-checked="true"] .knob{transform:translateX(18px);}
   .rsel{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:var(--r);background:#fff;padding:9px 10px;font:600 12px Inter;color:#000;cursor:pointer;}
+  .grp.exp.mvpdim{opacity:.4;pointer-events:none;}
   hr{border:0;border-top:1px solid var(--line);margin:2px 0 18px;}
 
   /* ---- stage ---- */
@@ -69,6 +70,14 @@
     <div class="brand"><span class="dot"></span><b>PROTOTYPE CANVAS</b></div>
     <p class="sub">Complex.com article comments. Controls drive the live prototype in the frame →</p>
 
+    <div class="grp"><div class="row"><span class="lbl">MVP</span>
+      <button class="sw" id="swMVP" role="switch" aria-label="MVP scope"><span class="knob"></span></button></div>
+      <div class="note">Only the v1 spec: comments drawer (desktop side sheet / mobile bottom sheet) with empty,
+        loading and sort states, composer states, card states, reactions, flagging, notification settings.
+        Hides the timeline / action-bar experiments (their controls below are ignored).</div></div>
+
+    <hr>
+
     <div class="grp"><span class="cap">Viewer</span>
       <div class="seg" data-cmd="user">
         <button data-val="anon">Guest</button><button data-val="user">Signed in</button><button data-val="banned">Banned</button>
@@ -91,13 +100,18 @@
       </div>
     </div>
 
+    <div class="grp"><div class="row"><span class="lbl">Bottom anchor ad</span>
+      <button class="sw" id="swAD" role="switch" aria-label="Bottom anchor ad"><span class="knob"></span></button></div>
+      <div class="note">Simulates the sticky ad pinned to the screen bottom on the live site — the floating
+        comment UI lifts above it. Applies in MVP too.</div></div>
+
     <hr>
 
-    <div class="grp"><div class="row"><span class="lbl">Margin timeline</span>
+    <div class="grp exp"><div class="row"><span class="lbl">Margin timeline</span>
       <button class="sw" id="swTL" role="switch" aria-label="Margin timeline"><span class="knob"></span></button></div>
       <div class="note">Desktop only — left-margin reading-progress trail.</div></div>
 
-    <div class="grp"><span class="cap">Timeline bar (mobile)</span>
+    <div class="grp exp"><span class="cap">Timeline bar (mobile)</span>
       <select class="rsel" id="selMB">
         <option value="off">Off</option>
         <option value="top">Top — under the nav</option>
@@ -106,7 +120,7 @@
       <div class="note">Scroll-progress bar with comment DP dots (tap a dot). Bottom = newest iteration:
         docked above the bottom bar, comment cards open upward.</div></div>
 
-    <div class="grp"><span class="cap">Re-rank ⨯ essentials (mobile)</span>
+    <div class="grp exp"><span class="cap">Re-rank ⨯ essentials (mobile)</span>
       <select class="rsel" id="selRR">
         <option value="off">Essentials only</option>
         <option value="stacked">Both, stacked (today)</option>
@@ -155,13 +169,14 @@
       device=document.getElementById("device"),dims=document.getElementById("dims"),hint=document.getElementById("hint");
 
   // harness holds the source of truth; it pushes state into the iframe.
-  var state={device:"mobile",user:"user",cmt:"populated",page:"list",firstTime:true,trail:true,mbar:"bottom",rerank:"focus"};
+  var state={device:"mobile",user:"user",cmt:"populated",page:"list",firstTime:true,trail:true,mbar:"bottom",rerank:"focus",mvp:false,ad:false};
   var DIMS={desktop:{w:1440,h:900,chrome:38,bezel:0},mobile:{w:390,h:844,chrome:0,bezel:13}};
 
   function post(type,value){try{frame.contentWindow.postMessage({__tlc:1,type:type,value:value},"*");}catch(e){}}
   function sendAll(){
     post("user",state.user);post("cmt",state.cmt);post("page",state.page);
     post("gl",!state.firstTime);post("trail",state.trail);post("mbar",state.mbar);post("rerank",state.rerank);
+    post("mvp",state.mvp);post("ad",state.ad);
   }
   // when the prototype boots inside the frame it says "ready" → push current state
   window.addEventListener("message",function(e){var d=e.data;if(d&&d.__tlc===1&&d.type==="ready")sendAll();});
@@ -212,6 +227,10 @@
   }
   var syncGL=wireSwitch("swGL",function(){return state.firstTime;},function(v){state.firstTime=v;post("gl",!v);});
   var syncTL=wireSwitch("swTL",function(){return state.trail;},function(v){state.trail=v;post("trail",v);});
+  function dimExp(){[].forEach.call(document.querySelectorAll(".grp.exp"),function(g){g.classList.toggle("mvpdim",state.mvp);});}
+  var syncMVP=wireSwitch("swMVP",function(){return state.mvp;},function(v){state.mvp=v;dimExp();post("mvp",v);});
+  var syncAD=wireSwitch("swAD",function(){return state.ad;},function(v){state.ad=v;post("ad",v);});
+  dimExp();
   var selMB=document.getElementById("selMB");selMB.value=state.mbar;
   selMB.addEventListener("change",function(){state.mbar=selMB.value;post("mbar",state.mbar);});
   var selRR=document.getElementById("selRR");selRR.value=state.rerank;

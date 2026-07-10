@@ -44,18 +44,28 @@ injected on top. It's self-contained (images/fonts load from CDN).
   margin, anchored to the paragraph each comment refers to, scrolling with the content. Line runs from
   the **title** to the last paragraph; a fill grows with reading. Nearby markers **cluster** (avatar +
   count badge). **Hidden on mobile (<1024px)** — the live article has only ~16px side padding, so there
-  is no room for a margin trail; mobile relies on the FAB + end-of-page feed instead (`DESK()` guard +
-  `@media(max-width:1023px)` hides `.tlc-trail`).
+  is no room for a margin trail; mobile relies on the action bar / FAB → drawer instead (`DESK()`
+  guard + `@media(max-width:1023px)` hides `.tlc-trail`).
 - Coordinates are all **document-space** (`getBoundingClientRect`+scrollY) because the live DOM's
   offsetParents are unknown. Trail X (`trailX()`) aligns with the **hamburger menu** (`[data-testid=
   "hamburger-menu-button"]`) / the `max-w-[1400px]` grid left edge — so it sits at the grid edge and
   stays there on wide screens rather than running to the viewport edge.
-- **Mobile (<1024px):** no margin trail. Engage via the **"Comment" FAB** (composer) + the
-  **end-of-page feed**. The **bottom sheet** (full-width; content capped at 1440, centered; no dim
+- **Mobile (<1024px):** no margin trail. Engage via the **action bar's comment button** (MVP: the
+  FAB) → the **comments drawer** — since Build 45 the ONLY thread surface (no on-page feed).
+  The **bottom sheet** (full-width; content capped at 1440, centered; no dim
   overlay, drop shadow only) is used by the FAB composer. **Desktop (≥1024px):** markers show; hover →
   popover, click → bottom sheet.
-- **React + reply:** like (heart) on comments and replies; **Reply** opens an inline box → one level
-  of nested replies.
+- **React + reply (revised Build 43):** like (heart) on comments and replies. **Threading is flat, max
+  ONE level deep**: replying to a top-level comment starts its thread; replying to a **reply** stays in
+  that same tier and just carries an **@name mention** (prefilled "@author " in the text; a leading
+  @mention renders styled via `.tlc-mention`). Reply buttons on reply cards pass `data-to` +
+  `data-id`(=parent). **ONE composer per surface (Mobbin-validated: HYPE/Spotify/NAVER/Instagram —
+  no inline second box):** in the feed + drawer, tapping Reply puts that surface's own pinned composer
+  into **reply mode** (`replyCtx={pid,author}`) — a dismissible "Replying to @name ✕" banner chip
+  (reuses `.tlc-dw-quote`), reply placeholder, "Post reply" button; ✕ cancels and keeps typed text;
+  posting appends to the parent's `replies` (`startReply`/`rerenderComposer` in `live-inject.js`).
+  Only the desktop marker **sheet** keeps the old inline `.tlc-rbox` (it has no persistent composer,
+  so there is no duplication there).
 - **"Comment" FAB**: opens the full comments drawer — **desktop only now** (Build 30). On **mobile**
   it's replaced by the **bottom action bar**.
 - **Mobile bottom action bar (Build 30, `<1024px`):** `.tlc-abar` — a centered floating pill,
@@ -100,12 +110,16 @@ injected on top. It's self-contained (images/fonts load from CDN).
 - **Select-to-comment (Medium-style, Build 21)**: selecting article copy shows a floating `.tlc-seltip`
   pill with one **Comment** action; clicking opens the drawer in compose mode with the selected passage
   as a **quote chip**. Posted comments carry `c.quote` + a progress derived from the selection position.
-- **End-of-page comment section**: a feed of the same comments capped at **5** (`END_MAX`), then a
-  **"Load more (N)"** CTA. **No pin/section tags** — each comment shows a **clickable snippet/quote**
+- **End-of-page comment section — REMOVED from the page (Build 45).** Comments can no longer be
+  scrolled to; the thread lives **only in the drawer** (desktop side sheet / mobile bottom sheet).
+  The `.tlc-cend` element + its render/composer code are still in `live-inject.js` but the element is
+  **never inserted** (kept detached; `renderEnd` early-returns) — reverting is a one-line change.
+  The drawer keeps the snippet/quote behavior: each comment shows a **clickable snippet/quote**
   (the `c.quote` if it was a selection, else nearest-paragraph text) that **jumps to** that part of the
-  article (`.tlc-snip`, keyboard-accessible). On arrival the target paragraph gets a subtle **light-gray
-  `#e5e5e5`** highlight (`.tlc-flash`, ~1.8s). On **mobile**, clicking a snippet **collapses the bottom
-  sheet** as it scrolls so the spot is visible; the desktop side drawer stays open (Build 23).
+  article (`.tlc-snip`, keyboard-accessible; hidden in MVP). On arrival the target paragraph gets a
+  subtle **light-gray `#e5e5e5`** highlight (`.tlc-flash`, ~1.8s). On **mobile**, clicking a snippet
+  **collapses the bottom sheet** as it scrolls so the spot is visible; the desktop side drawer stays
+  open (Build 23).
 - **Comments drawer** (Build 20–21): "Load more" / select-to-comment / FAB opens `.tlc-drawer`. **Desktop:**
   sticky right-side panel (`min(420px,92vw)`, full-height). **Mobile (<1024px): a bottom sheet** — slides
   up from the bottom, `max-height:80vh`, rounded top. Its own composer (like/reply/post + quote chip).
@@ -134,10 +148,30 @@ injected on top. It's self-contained (images/fonts load from CDN).
   Controls: 3-way seg in the in-page panel (`data-g="mbar"`), select `#selMB` in the canvas rail,
   bridge `mbar` accepts "off"/"top"/"bottom" (+ legacy booleans).
 - **Prototype control panel (Build 26–27, bottom-left, collapsible, all viewports):** `.tlc-proto` with
-  toggles for **every condition** — Viewer (Guest/Signed-in/Banned), First-time user (community-
-  guidelines prompt), Comments (Populated/Empty/Loading skeleton), Template (Article/List), **Margin
-  timeline** (desktop trail) + **Timeline bar** (mobile bar), plus **Notification settings** + **Reset
-  demo data** buttons.
+  toggles for **every condition** — **MVP first, at the very top** (Build 42–43, see below), then
+  Viewer (Guest/Signed-in/Banned), First-time user (community-guidelines prompt), Comments
+  (Populated/Empty/Loading skeleton), Template (Article/List), **Margin timeline** (desktop trail) +
+  **Timeline bar** (mobile bar), plus **Notification settings** + **Reset demo data** buttons.
+- **Bottom anchor ad toggle (Build 44):** the live site sometimes pins a **sticky anchor ad** to the
+  viewport bottom (user screenshot: COMPLEX mark · green LTL creative · ✕). Simulated as `.tlc-ad`
+  (fixed, z 2147483065, 50px + safe-area, dismissible ✕ = toggle off, CTA/✕ toast). `adOn` persisted
+  `complex-tlc-ad`, switch `#tlcSwAD` (panel, after Template — NOT in the MVP-grayed group: it's a
+  page condition that applies in MVP too), `#swAD` (canvas rail), bridge type `ad`. When ON the
+  `tlc-adon` body class lifts every floating bottom element: FAB → 70px, abar → 66px, bottom timeline
+  panel → 50px (its height calc in `placeMbar()` stops at the ad's top edge), proto panel → 70px.
+  Drawer/sheets still slide over the ad (they're modal surfaces).
+- **MVP toggle (Build 42):** `mvpOn` (persisted `complex-tlc-mvp`; switch `#tlcSwMVP` in the panel,
+  `#swMVP` in the canvas rail, bridge type `mvp`). **ON = only the spec'd v1 requirements**: the
+  comments drawer (since Build 45 the ONLY thread surface — empty, loading skeleton, sort flip), composer (2,000-char
+  counter, guidelines first-time, auth gate, banned notice), card states (reply tier, edit <5 min,
+  [deleted by author], [removed by moderator]), reactions (heart + count + who-reacted), report/flag +
+  confirmation, notification-settings modal. **Hidden in MVP:** margin trail, mobile timeline bar,
+  action bar / re-rank variants, select-to-comment, and the cards' progress snippets / "% badge" /
+  "Jump to spot" (timeline anchors are beyond v1). On mobile the plain **Comment FAB** returns as the
+  entry point (`.tlc-mvp .tlc-fab{display:flex}` overrides the mobile hide). Implementation = a
+  `tlc-mvp` body class + `mvpOn` guards in `renderTrail`/`updateFill`/`renderMbar`/`updateMbar`/
+  `renderAbar`/`showSel`/`cmtHtml`; the experiment controls gray out (`.tlc-pg-exp.mvpdim` /
+  `.grp.exp.mvpdim`) while ON but keep their stored values.
 - **Composer states (Build 26):** shared `composerInner(kind)` → **auth gate** (guest), **banned**
   notice (the frontend "notification signal"), first-time **community-guidelines** acceptance, or the
   **editor with a live 2,000-char counter** (red + Post disabled when over). Wired via delegation
@@ -149,7 +183,8 @@ injected on top. It's self-contained (images/fonts load from CDN).
   recent⇄popular — Mobbin-validated compact pattern; Figma sort component mirror pending). All write
   actions gated by viewer state.
 - **Notification settings (Build 26):** profile modal, two toggles — Email-on-reply + Weekly-digest.
-- **Persistence:** comments in `localStorage` key `complex-tlc-live-v3`; falls back to seeded comments
+- **Persistence:** comments in `localStorage` key `complex-tlc-live-v4` (v4 = Build 43 seed adds a
+  flattened reply-to-reply @mention demo, s6r3); falls back to seeded comments
   (incl. demo edited/deleted/removed/reactors flags), spread 4%–99%. Bump the key version when changing
   seeds so they re-show. Condition state persists in `complex-tlc-{user,guidelines,pagetype,trail,
   ntf-reply,ntf-digest}`.
