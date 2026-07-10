@@ -2,14 +2,16 @@
 
 Running log of decisions, rationale, and state. Newest first. Update every build.
 
-> **Current state = Build 41 (2026-07-10): timeline bar docks at the BOTTOM (user's "Page 3" mock —
-> default; off/top/bottom switchable) and its comment card is a centered BROWSER: ‹ › steps through
-> comments, the article auto-scrolls behind, the referenced paragraph holds a light-gray highlight.
-> Earlier
-> today: implemented the USER'S OWN Figma mock ("Page 2") as a
-> seventh re-rank ⨯ essentials layout — `focus`, now the DEFAULT: nav deck (‹ RE-RANK ›) expanded at
-> rest + social actions collapsed into a mini-icon bubble; tap the bubble and the two swap (essentials
-> pill expands, re-rank collapses to a black shuffle bubble) via a true in-place morph.** Review via **`canvas.html`** (defaults
+> **Current state = Build 41 (2026-07-10), NOW ON GITHUB + VERCEL:** repo
+> **https://github.com/daniiyalali/comments** — push `main` → auto-deploy; the deployed root is the
+> **canvas harness**, `/prototype.html` is the bare prototype (`build_live.py` packages `dist/`
+> itself, no manual copy).
+> **Timeline bar docks at the BOTTOM (user's "Page 3" mock — default; off/top/bottom switchable);
+> its comment card is a centered BROWSER: ‹ › steps through comments, the article auto-scrolls
+> behind, the referenced paragraph holds a light-gray highlight. Dots = 4px solid black (no stroke,
+> hidden 20×24 tap area), bloom to a 20px DP. Bottom bar = the user's "Page 2" `focus` layout
+> (DEFAULT): nav deck (‹ RE-RANK ›) expanded at rest + social mini-icon bubble; tap to swap via a
+> true in-place morph.** Review via **`canvas.html`** (defaults
 > to Mobile + List template). Main deliverable is still `index.html` (real live complex.com page +
 > injected comment system, built via `build_live.py` + `live-inject.js`).
 > **Mobile bottom = essentials pill; on List articles it merges with the nav deck per
@@ -19,6 +21,22 @@ Running log of decisions, rationale, and state. Newest first. Update every build
 > https://www.figma.com/design/Ils4e9Naytz66xI6UJ1G49/Comments-Exp (see the entry below).
 
 ---
+
+## 2026-07-10 — Repo + deploy: GitHub (daniiyalali/comments) → Vercel; canvas is the deployed root
+- **git init + pushed to https://github.com/daniiyalali/comments** — the push worked via the user's
+  macOS keychain git credentials (no token needed; user offered one — classic PAT with `repo` scope
+  is the answer if ever required). `.gitignore`: `.DS_Store`, `.claude/settings.local.json`, the zip.
+- **Vercel via Git integration** (no node/npx/vercel CLI in this sandbox): `vercel.json` =
+  `{buildCommand:null, outputDirectory:"dist"}`; the user imports the repo once at vercel.com/new,
+  then every push auto-deploys. Vercel domain can be renamed/custom-domained anytime (Settings →
+  Domains; renaming the `.vercel.app` name breaks old links).
+- **User: "can we not upload how we have it in prototype? Like on a canvas?"** → the DEPLOYED SITE
+  OPENS ON THE CANVAS: `build_live.py` now packages `dist/` itself — `dist/index.html` = canvas
+  harness (iframe retargeted `index.html`→`prototype.html`), `dist/prototype.html` = the
+  self-contained prototype. The manual `cp index.html dist/` step is GONE. Root-level files unchanged
+  (local `canvas.html` still embeds local `index.html`).
+- Commit convention: build-numbered messages + `Co-Authored-By: Claude Fable 5`. Pending: record the
+  live `*.vercel.app` URL in docs once the user shares it.
 
 ## 2026-07-10 — Build 41: bottom-mode comment card → comment BROWSER (centered + ‹ › + auto-scroll + held highlight)
 - **User iteration on Page 3:** when the card appears (bottom mode): (1) card is **centered**, (2) has

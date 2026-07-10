@@ -40,18 +40,25 @@ designs & states”, 5 sections, prototype flows wired; only the prototype contr
   card, marker hover → popover, marker click → sheet, FAB → panel, ✕ → back. **Re-Rank stays inert.**
 - Keep the Figma file and `live-inject.js` in sync going forward — if a build changes UI, mirror it.
 
-**Pick up here next session:** open **`canvas.html`** (defaults to Mobile + List template + the new
-"Deck + bubble (tap to swap)" layout) and compare the seven re-rank ⨯ essentials merges via the rail
-dropdown; decide which to productionize, then hand to eng. **Re-Rank tap is inert on purpose** — that interaction lives
-in a separate file; only the coexistence layout is being evaluated here. Deploy still staged — drag
-`dist/` (or `complex-comments-netlify.zip`) to https://app.netlify.com/drop (entry images need HTTPS;
-blank locally over `file://`).
+**Pick up here next session:** open **`canvas.html`** (defaults to Mobile + List + focus layout +
+bottom timeline) — evaluate (a) the **bottom timeline + comment-browser card** (tap dot → centered
+card, ‹ › steps comments, article scrolls behind, light-gray paragraph highlight) vs the Top
+placement, and (b) the seven re-rank ⨯ essentials merges; decide what to productionize, then hand to
+eng. **Re-Rank tap is inert on purpose** — that interaction lives in a separate file. **Deploy is
+live-ready:** repo **https://github.com/daniiyalali/comments** — pushing `main` auto-deploys once the
+repo is imported at vercel.com/new (get the `*.vercel.app` URL from the user / dashboard; the site
+root opens the CANVAS, `/prototype.html` is the bare prototype for on-device testing). Entry images
+need HTTPS — blank over `file://` is expected, not a bug. Vercel domain can be renamed / custom
+domain added anytime under Project → Settings → Domains (renaming kills the old link).
+**Figma mirror pending:** sort flip-toggle (Build 37) + the Build 34–41 focus/bottom-bar changes are
+NOT yet mirrored on the Figma inventory page (the user's own Page 2/3 mocks cover the concepts).
 
 ## Review harness — `canvas.html`
 Open this instead of `index.html`. **Desktop ⇄ Mobile** switch + a control rail *outside* the previewed
 UI (the prototype hides its own `.tlc-proto` panel when embedded and is driven via postMessage). Rail
 controls: Viewer (Guest/Signed-in/Banned) · First-time user · Comments (Populated/Empty/Loading) ·
-Template (Article/List) · Margin timeline (desktop) · Timeline bar (mobile) · **Re-rank ⨯ essentials**
+Template (Article/List) · Margin timeline (desktop) · **Timeline bar (mobile): Off / Top / Bottom**
+(`#selMB`, default Bottom) · **Re-rank ⨯ essentials**
 (Essentials only / Both stacked / One card two rows / One pill / Edge arrows / Auto-swap / Deck +
 bubble tap-to-swap) ·
 Notification settings · Reset · Reload. Picking a merge layout auto-switches Template→List (the deck
@@ -160,6 +167,9 @@ progress (scroll %). **Everything is in [index.html](index.html)** — open it i
 ## Files
 - `canvas.html` — **review harness (open this)**: Desktop/Mobile switch + external control rail; embeds `index.html`.
 - `index.html` — the prototype itself (open directly for the standalone in-page control panel).
-- `build_live.py`, `live-inject.js` — builder + comment-system source.
+- `build_live.py`, `live-inject.js` — builder + comment-system source. The builder also packages
+  `dist/` (canvas as `index.html` + `prototype.html`).
 - `live.html`, `all.css`, `entries.json` — build inputs (live page, real CSS, entry images).
+- `dist/` — deploy folder (auto-generated, committed); `vercel.json` (static serve of dist),
+  `netlify.toml` (fallback), `.gitignore`, `complex-comments-netlify.zip` (untracked).
 - `CLAUDE.md`, `MEMORY.md`, `HANDOFF.md`, `DESIGN-SYSTEM.md` — docs + design-system reference.

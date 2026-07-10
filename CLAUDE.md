@@ -115,9 +115,11 @@ injected on top. It's self-contained (images/fonts load from CDN).
   [switch]") toggles the margin trail on/off so both iterations are viewable. `trailOn` persisted in
   `localStorage` `complex-tlc-trail`.
 - **Mobile timeline bar (Build 27/29 + 40, `<1024px` only):** `.tlc-mbar` — a slim (3px) black scroll-
-  progress line with comment markers at each comment's progress%: **plain black dots (no numbers)**;
-  when the fill front reaches one it **blooms into the DP** (colored avatar + initials, via a `--dp`
-  CSS var on `.tlc-mact`), then shrinks back. Clusters by pixel proximity. Mobile counterpart to the
+  progress line with comment markers at each comment's progress%: **4px solid-black dots — no white
+  stroke, no numbers** (`border:0` must stay EXPLICIT on `.tlc-mdot .tlc-av`: the base `.tlc-av` has a
+  2px white border that leaks back otherwise), each with an invisible ~20×24 tap area (wrapper
+  padding); when the fill front reaches one it **blooms into the 20px DP** (colored avatar + 9px
+  initials, via a `--dp` CSS var on `.tlc-mact`), then shrinks back. Clusters by pixel proximity. Mobile counterpart to the
   desktop margin trail. **Position is switchable (Build 40, from the user's Figma "Page 3" mock,
   node 98-100): `mbarPos` = off | top | bottom (DEFAULT bottom)**, persisted `complex-tlc-mbar`
   (legacy "1"/"0" map to bottom/off). **Top** = pinned under the sticky nav (`headerBottom()`, ~101px),
@@ -162,8 +164,12 @@ scaled iframe and drives it via `postMessage`; the prototype hides its own `.tlc
 embedded (`EMBED` = in an iframe). Or open `index.html` directly for the standalone in-page panel. NOTE: this sandbox can't run a local server (getcwd blocked) or
 screenshot, so `index.html` is **not visually verified here** — it needs a human/browser to confirm
 the static-stripped live page + injected UI render correctly.
+- **Syntax-check BEFORE building** (no node here): `osascript -l JavaScript` + JavaScriptCore
+  `new Function(src)` on `live-inject.js`. And NEVER put backticks inside the CSS template literal.
 - **Entry images need HTTPS:** opened via `file://` the Complex CDN images stay blank; served over
-  HTTPS (e.g. Netlify) they load. Don't mistake local blank images for a bug.
+  HTTPS (Vercel/Netlify) they load. Don't mistake local blank images for a bug.
+- **Live/deployed:** repo https://github.com/daniiyalali/comments, auto-deploys to Vercel on push —
+  the deployed root is the canvas; `/prototype.html` is the bare prototype.
 
 ## Figma mirror (added 2026-07-10)
 The complete design inventory — every screen, variant, and state in `live-inject.js` — also exists as
