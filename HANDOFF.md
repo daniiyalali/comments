@@ -32,7 +32,7 @@ in the prototype control panel + canvas rail (persisted `complex-tlc-mvp`, bridg
 empty state, loading skeleton, sort flip toggle, Load more → drawer as the pagination pattern),
 composer (2,000-char counter, first-time community-guidelines, auth gate, banned notice), comment card
 (top-level + one reply tier, edit <5 min, [deleted by author], [removed by moderator]), reactions
-(heart + count + expandable who-reacted), report/flag + confirmation, and the profile notification-
+(heart + count + expandable who-reacted — who-reacted later CUT from MVP in Build 47), report/flag + confirmation, and the profile notification-
 settings modal (email-on-reply + weekly digest). Everything experimental hides: margin trail, mobile
 timeline bar, action bar / re-rank variants, select-to-comment, and the cards' progress snippets /
 "% badge" / "Jump to spot". On mobile the plain **Comment FAB** returns as the entry point. The
@@ -113,7 +113,8 @@ only exists on list articles).
 - **Comment card:** top-level + ONE flat reply tier (Build 43: reply-to-reply stays in the tier with an
   @name mention; Reply on feed/drawer cards drives the surface's single pinned composer — "Replying to
   @name ✕" banner, no inline box); Edit (<5 min); [deleted by author]; [removed by moderator].
-- **Reactions:** heart + count + "Who reacted" list. **Flagging:** Report (auth) + confirmation.
+- **Reactions:** heart + count everywhere; "Who reacted" list in **full mode only** (cut from MVP,
+  Build 47). **Flagging:** Report (auth) + confirmation.
 - **Profile:** Notification settings modal (email-on-reply + weekly digest).
 - **Desktop:** left **margin timeline** trail (toggle) + comment FAB.
 - **Mobile:** **top timeline bar** (black dots that bloom into DPs, tap → floating comment card) +

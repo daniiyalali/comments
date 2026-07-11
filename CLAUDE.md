@@ -180,7 +180,8 @@ injected on top. It's self-contained (images/fonts load from CDN).
   (`wireComposer`) so re-render never drops listeners.
 - **Card states (Build 26):** `edited` "· edited"; **[deleted by author]** (kept when replies exist);
   **[removed by moderator]**; inline **Edit** (own, 5-min window); **Delete**. **Reactions** = heart +
-  count + **"Who reacted"** expandable list (`reactors`). **Report/flag** in the ⋯ menu (auth-only) +
+  count + **"Who reacted"** expandable list (`reactors`) — who-reacted is **full mode only** (hidden
+  in MVP, Build 47). **Report/flag** in the ⋯ menu (auth-only) +
   confirmation. **Sort** = single flip-toggle button (Build 37: `Sort [⇅ Most recent]`, one tap flips
   recent⇄popular — Mobbin-validated compact pattern; Figma sort component mirror pending). All write
   actions gated by viewer state.
